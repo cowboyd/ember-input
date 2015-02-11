@@ -1,4 +1,5 @@
-import { describe, it, beforeEach } from '../../test-helper';
+import { describe, it, beforeEach, afterEach } from '../../test-helper';
+import Ember from 'ember';
 import Input from 'ember-input';
 
 describe('Input', function() {
@@ -35,7 +36,15 @@ describe('Input', function() {
           })
         }
       }).create();
-      input.get('validator.isFulfilled');
+      this.refresh = function() {
+        input.get('validator.isFulfilled');
+      };
+
+      Ember.addObserver(input, 'validator.isFulfilled', this.refresh);
+      this.refresh();
+    });
+    afterEach(function() {
+      Ember.removeObserver(input, 'validator.isFulfilled', this.refresh);
     });
     it("starts of as invalid", function() {
       expect(input.get('validator.isFulfilled')).to.equal(false);
@@ -44,7 +53,6 @@ describe('Input', function() {
     describe("updating the input", function() {
       beforeEach(function() {
         input.set('source', 'football');
-        expect(input.get('validator.isSettled'));
       });
       it("becomes valid", function() {
         expect(input.get('validator.isFulfilled')).to.equal(true);

@@ -6,3 +6,4 @@ setResolver(resolver);
 export var describe = window.describe;
 export var it = window.it;
 export var beforeEach = window.beforeEach;
+export var afterEach = window.afterEach;
