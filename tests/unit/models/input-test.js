@@ -184,14 +184,48 @@ describe('Input', function() {
         expect(isFulfilled()).to.equal(false);
       });
     });
-
   });
 
-  describe.skip("with multiple atomic fields", function() {
+  describe("with multiple atomic fields", function() {
+    beforeEach(function() {
+      input = Input.extend({
+        number: Input.hasOne({
+          source: '5',
+          transform: function(source) {
+            return parseInt(source);
+          },
+          rules: {
+            aNumber: Input.rule('source', function() {
+              return !isNaN(parseInt(this.get('source')));
+            })
+          }
+        }),
+        string: Input.hasOne({
+          source: 'hello'
+        })
+      }).create();
+    });
+    it("has a source which is a rollup of the fields", function() {
+      expect(input.get('source.number')).to.equal('5');
+      expect(input.get('source.string')).to.equal('hello');
+    });
+    describe("changing one of the subfields", function() {
+      beforeEach(function() {
+        input.set('number.source', '10');
+      });
+      it("updates the rollup", function() {
+        expect(input.get('source.number')).to.equal('10');
+      });
+    });
 
   });
   describe.skip("with a validation that has dependencies", function() {
 
   });
+
+  describe("incorporating read only values from children", function() {
+
+  });
+
 
 });

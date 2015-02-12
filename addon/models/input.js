@@ -1,5 +1,7 @@
 import Ember from 'ember';
 import PropertyBindingsMixin from 'ember-binding-macros/mixins/property-bindings';
+import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
+
 var RSVP = Ember.RSVP;
 var a_slice = [].slice;
 
@@ -52,7 +54,22 @@ var Input = Ember.Object.extend(PropertyBindingsMixin, {
         return createPromiseObject(RSVP.hash(this.getProperties(keys)));
       }).readOnly()
     }).create();
-  }).readOnly()
+  }).readOnly(),
+
+  __bindChildValues__: Ember.observer(function() {
+    var childKeys = [];
+    this.constructor.eachComputedProperty(function(name, meta) {
+      if (meta.isInput) {
+        childKeys.push(name);
+      }
+    }, this);
+    if (childKeys.length > 0) {
+      this.set('source', Ember.Object.create());
+      childKeys.forEach(function(key) {
+        bindProperties(this, key + ".source", "source." + key);
+      }, this);
+    }
+  }).on('init')
 });
 
 Input.rule = function(fn) {
@@ -83,6 +100,13 @@ Input.rule = function(fn) {
   });
 
   return Ember.computed.apply(Ember, args);
+};
+
+Input.hasOne = function(attrs) {
+  attrs = attrs || {};
+  return Ember.computed(function() {
+    return Input.extend(attrs).create();
+  }).meta({isInput: true});
 };
 
 var Validator = Ember.Object.extend({
