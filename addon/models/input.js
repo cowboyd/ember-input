@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import PropertyBindingsMixin from 'ember-binding-macros/mixins/property-bindings';
+import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
 
 var RSVP = Ember.RSVP;
@@ -25,7 +25,7 @@ function promise(start) {
   return createPromiseObject(new Ember.RSVP.Promise(start));
 }
 
-var Input = Ember.Object.extend(PropertyBindingsMixin, {
+var Input = Ember.Object.extend(PropertyBindings, {
   propertyBindings: ['transformedValue > output', 'formattedValue > source'],
   rules: {},
   transform: function(source) {
