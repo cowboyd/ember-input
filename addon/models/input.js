@@ -51,10 +51,16 @@ Input.rule = function(fn) {
   args.push(function thunk() {
     var input = this.get('input');
     return promise(function(resolve, reject) {
-      if (fn.call(input)) {
-        resolve();
+      if (fn.length === 2) {
+        fn.call(input, resolve, reject);
+      } else if (fn.length === 0){
+        if (fn.call(input)) {
+          resolve();
+        } else {
+          reject();
+        }
       } else {
-        reject();
+        Ember.assert("Input.rule should be called with either 0 or 2 arguments", false);
       }
     });
   });
