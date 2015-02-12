@@ -1,5 +1,5 @@
 import Ember from 'ember';
-
+import PropertyBindingsMixin from 'ember-binding-macros/mixins/property-bindings';
 var RSVP = Ember.RSVP;
 var a_slice = [].slice;
 
@@ -23,8 +23,19 @@ function promise(start) {
   return createPromiseObject(new Ember.RSVP.Promise(start));
 }
 
-var Input = Ember.Object.extend({
+var Input = Ember.Object.extend(PropertyBindingsMixin, {
+  propertyBindings: ['transformedValue > output'],
   rules: {},
+  transform: function(source) {
+    return source;
+  },
+  transformedValue: Ember.computed('validator.isFulfilled', 'source', function() {
+    if (this.get('validator.isFulfilled')) {
+      return this.transform(this.get('source'));
+    } else {
+      return this.get('output');
+    }
+  }).readOnly(),
   validator: Ember.computed('rules', function() {
     var rules = this.get('rules');
     var keys = Object.keys(rules);

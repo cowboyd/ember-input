@@ -5,10 +5,64 @@ import Input from 'ember-input';
 
 describe('Input', function() {
   var input;
-
+  afterEach(function() {
+    if (!!input) {
+      input.destroy();
+    }
+  });
   function isFulfilled() {
     return input.get('validator.isFulfilled');
   }
+
+  describe("with no customization", function() {
+    beforeEach(function() {
+      input = Input.create({
+        source: 'foo'
+      });
+    });
+    it("has the same output as the source", function() {
+      expect(input.get('output')).to.equal('foo');
+    });
+  });
+
+  describe("with a transform", function() {
+    beforeEach(function() {
+      input = Input.create({
+        source: '5',
+        transform: function(source) {
+          return parseInt(source);
+        },
+        rules: {
+          anInteger: Input.rule('source', function() {
+            return !isNaN(parseInt(this.get('source')));
+          })
+        }
+      });
+    });
+    it('derives the output from the transform function', function() {
+      expect(input.get('output')).to.equal(5);
+    });
+    describe("if the source is set to an invalid value", function() {
+      beforeEach(function() {
+        input.set('source', 'five');
+      });
+      it("keeps the same output", function() {
+        expect(input.get('output')).to.equal(5);
+      });
+    });
+    describe("if the source is set to another valid value", function() {
+      beforeEach(function() {
+        input.set('source', '10');
+      });
+      it("switches to that output", function() {
+        expect(input.get('output')).to.equal(10);
+      });
+    });
+
+
+  });
+
+
   describe("with no validations at all", function() {
     beforeEach(function() {
       input = Input.extend({}).create();
@@ -103,10 +157,10 @@ describe('Input', function() {
 
   });
 
-  describe("with multiple atomic fields", function() {
+  describe.skip("with multiple atomic fields", function() {
 
   });
-  describe("with a validation that has dependencies", function() {
+  describe.skip("with a validation that has dependencies", function() {
 
   });
 
