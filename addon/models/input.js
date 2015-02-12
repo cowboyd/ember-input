@@ -24,7 +24,7 @@ function promise(start) {
 }
 
 var Input = Ember.Object.extend(PropertyBindingsMixin, {
-  propertyBindings: ['transformedValue > output'],
+  propertyBindings: ['transformedValue > output', 'formattedValue > source'],
   rules: {},
   transform: function(source) {
     return source;
@@ -36,6 +36,12 @@ var Input = Ember.Object.extend(PropertyBindingsMixin, {
       return this.get('output');
     }
   }).readOnly(),
+  format: function() {
+    return this.get('source');
+  },
+  formattedValue: Ember.computed('output', 'format', function() {
+    return this.get('format').call(this, this.get('output'));
+  }),
   validator: Ember.computed('rules', function() {
     var rules = this.get('rules');
     var keys = Object.keys(rules);

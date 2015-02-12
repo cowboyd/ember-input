@@ -58,9 +58,43 @@ describe('Input', function() {
         expect(input.get('output')).to.equal(10);
       });
     });
-
-
   });
+
+  describe("with custom formatting", function() {
+    beforeEach(function() {
+      input = Input.create({
+        output: 5,
+        transform: function(source) {
+          if (source === 'not five') {
+            return 6;
+          } else if (source === 'five') {
+            return 5;
+          } else {
+            return NaN;
+          }
+        },
+        format: function(output) {
+          if (output === 5) {
+            return 'five';
+          } else {
+            return 'not five';
+          }
+        }
+      });
+    });
+    it("is formatted correctly", function() {
+      expect(input.get('source')).to.equal('five');
+    });
+    describe("when the output changes", function() {
+      beforeEach(function() {
+        input.set('output', 6);
+      });
+      it("updates the formatted value", function() {
+        expect(input.get('source')).to.equal('not five');
+      });
+    });
+  });
+
 
 
   describe("with no validations at all", function() {
