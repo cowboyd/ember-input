@@ -204,6 +204,7 @@ describe('Input', function() {
           source: 'hello'
         })
       }).create();
+      isFulfilled();
     });
     it("has a source which is a rollup of the fields", function() {
       expect(input.get('source.number')).to.equal('5');
@@ -219,6 +220,17 @@ describe('Input', function() {
         expect(input.get('source.string')).to.equal('goodbye');
       });
     });
+    describe("with an invalid subfield", function() {
+      beforeEach(function() {
+        input.set('source.number', 'five');
+      });
+
+      it("is not valid", function() {
+        expect(input.get('number.validator.isRejected')).to.equal(true);
+        expect(input.get('validator.isRejected')).to.equal(true);
+      });
+    });
+
   });
 
   describe.skip("with a validation that has dependencies", function() {

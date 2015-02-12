@@ -44,23 +44,40 @@ var Input = Ember.Object.extend(PropertyBindings, {
   formattedValue: Ember.computed('output', 'format', function() {
     return this.get('format').call(this, this.get('output'));
   }),
-  validator: Ember.computed('rules', function() {
+
+  validator: Ember.computed('rules', '_children.@each.validator', function() {
     var rules = this.get('rules');
     var keys = Object.keys(rules);
+    var dependentKeys = keys.concat('validators.@each.isPending');
 
     return Validator.extend(rules, {
       input: this,
-      validation: computed(keys, function() {
-        return createPromiseObject(RSVP.hash(this.getProperties(keys)));
+
+      validators: this.get('_children').mapBy('validator'),
+
+      validation: computed(dependentKeys, function() {
+        var properties = this.getProperties(keys);
+        var input = this.get('input');
+        var children = input.get('_childKeys').reduce(function(hash, key) {
+          hash[key] = input.get(key).get('validator.validation');
+          return hash;
+        }, {});
+
+        Ember.merge(properties, {
+          _children: RSVP.hash(children)
+        });
+        return createPromiseObject(RSVP.hash(properties));
       }).readOnly()
     }).create();
   }).readOnly(),
 
   __bindChildValues__: Ember.observer(function() {
     var childKeys = [];
+    var children = [];
     this.constructor.eachComputedProperty(function(name, meta) {
       if (meta.isInput) {
         childKeys.push(name);
+        children.push(this.get(name));
       }
     }, this);
     if (childKeys.length > 0) {
@@ -69,7 +86,16 @@ var Input = Ember.Object.extend(PropertyBindings, {
         bindProperties(this, key + ".source", "source." + key);
       }, this);
     }
-  }).on('init')
+    this.set('_children', Ember.A(children));
+    this.set('_childKeys', Ember.A(childKeys));
+  }).on('init'),
+
+  willDestroy: function() {
+    this.get('_children').forEach(function(child) {
+      child.destroy();
+    });
+    this._super.apply(this, arguments);
+  }
 });
 
 Input.rule = function(fn) {
