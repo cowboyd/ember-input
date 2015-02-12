@@ -212,13 +212,15 @@ describe('Input', function() {
     describe("changing one of the subfields", function() {
       beforeEach(function() {
         input.set('number.source', '10');
+        input.set('string.source', 'goodbye');
       });
       it("updates the rollup", function() {
         expect(input.get('source.number')).to.equal('10');
+        expect(input.get('source.string')).to.equal('goodbye');
       });
     });
-
   });
+
   describe.skip("with a validation that has dependencies", function() {
 
   });
