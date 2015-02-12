@@ -130,11 +130,7 @@ describe('Input', function() {
         }
       }).create();
 
-      Ember.addObserver(input, 'validator.isFulfilled', isFulfilled);
       isFulfilled();
-    });
-    afterEach(function() {
-      Ember.removeObserver(input, 'validator.isFulfilled', isFulfilled);
     });
     it("starts of as invalid", function() {
       expect(input.get('validator.isFulfilled')).to.equal(false);
