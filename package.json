@@ -1,7 +1,7 @@
 {
   "name": "ember-input",
   "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "A library for frictionless collection of user input.",
   "directories": {
     "doc": "doc",
     "test": "tests"
