@@ -230,7 +230,61 @@ describe('Input', function() {
         expect(input.get('validator.isRejected')).to.equal(true);
       });
     });
+  });
 
+  describe("with a collection of objects as a field", function() {
+    beforeEach(function() {
+      input = Input.extend({
+        list: Input.hasMany({
+          rules: {
+            aNumber: Input.rule('source', function() {
+              var val = !isNaN(parseInt(this.get('source')));
+              console.log('validate', val);
+              return !isNaN(parseInt(this.get('source')));
+            })
+          }
+        }),
+        rules: {
+          atLeastOneMemberInList: Input.rule('list.length', function() {
+            console.log(this.get('list.length'));
+            return this.get('list.length') > 0;
+          })
+        }
+      }).create();
+    });
+    it("is empty to start out with", function() {
+      expect(input.get('list.length')).to.equal(0);
+    });
+    it("can have validation rules that depend on it", function() {
+      expect(input.get('validator.isRejected')).to.equal(true);
+    });
+
+    describe("adding a member to the list", function() {
+      var member;
+      beforeEach(function() {
+        member = input.get('list').createObject('5');
+      });
+      it("has the same value as the input's source in the list", function() {
+        expect(input.get('list.firstObject.source')).to.equal('5');
+      });
+      it("becomes valid", function() {
+        expect(input.get('validator.isFulfilled')).to.equal(true);
+      });
+
+      describe("setting the single object to an invalid value", function() {
+        beforeEach(function() {
+          input.set('list.firstObject.source', 'five');
+        });
+
+        it("makes the list invalid", function() {
+          expect(input.get('list.firstObject.validator.isRejected')).to.equal(true);
+          expect(input.get('list.validator.isRejected')).to.equal(true);
+        });
+        it("causes the entire input to fail validation", function() {
+          expect(input.get('validator.isRejected')).to.equal(true);
+        });
+      });
+    });
   });
 
   describe.skip("with a validation that has dependencies", function() {

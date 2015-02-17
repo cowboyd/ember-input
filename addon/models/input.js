@@ -135,6 +135,41 @@ Input.hasOne = function(attrs) {
   }).meta({isInput: true});
 };
 
+Input.hasMany = function(attrs) {
+  attrs = attrs || {};
+  return Ember.computed(function() {
+    return InputList.create({
+      inputClass: Input.extend(attrs)
+    });
+  }).readOnly().meta({isInput: true});
+};
+
+var InputList = Ember.ArrayProxy.extend({
+  inputClass: Input.extend(),
+  createObject: function(source) {
+    var input = this.get('inputClass').create({source: source});
+    this.pushObject(input);
+    return input;
+  },
+  content: Ember.computed(function() {
+    return Ember.A();
+  }).readOnly(),
+  validators: Ember.computed.mapBy('content', 'validator'),
+  validator: Ember.computed(function() {
+    var list = this;
+
+    return Validator.extend({
+      input: list,
+      validators: list.get('validators'),
+      validation: Ember.computed('validators.@each.isPending', function() {
+        return createPromiseObject(RSVP.all(list.map(function(input) {
+          return input.get('validator.validation');
+        })));
+      })
+    }).create();
+  })
+});
+
 var Validator = Ember.Object.extend({
   input: Ember.required(),
   isPending: readOnly('validation.isPending'),
