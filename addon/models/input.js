@@ -160,7 +160,7 @@ var InputList = Ember.ArrayProxy.extend({
 
     return Validator.extend({
       input: list,
-      validators: list.get('validators'),
+      validators: readOnly('input.validators'),
       validation: Ember.computed('validators.@each.isPending', function() {
         return createPromiseObject(RSVP.all(list.map(function(input) {
           return input.get('validator.validation');
