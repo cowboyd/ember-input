@@ -282,6 +282,14 @@ describe('Input', function() {
           expect(input.get('validator.isRejected')).to.equal(true);
         });
       });
+      describe("removing a member from the list", function() {
+        beforeEach(function() {
+          member.remove();
+        });
+        it("removes itself from the list", function() {
+          expect(input.get('list.length')).to.equal(0);
+        });
+      });
     });
   });
 

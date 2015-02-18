@@ -159,8 +159,12 @@ Input.reads = function(dependentKey) {
 var InputList = Ember.ArrayProxy.extend({
   inputClass: Input.extend(),
   createObject: function(source) {
+    var list = this;
     var input = this.get('inputClass').create({source: source});
     this.pushObject(input);
+    input.remove = function() {
+      list.removeObject(this);
+    };
     return input;
   },
   content: Ember.computed(function() {
