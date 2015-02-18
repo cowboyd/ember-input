@@ -239,14 +239,12 @@ describe('Input', function() {
           rules: {
             aNumber: Input.rule('source', function() {
               var val = !isNaN(parseInt(this.get('source')));
-              console.log('validate', val);
               return !isNaN(parseInt(this.get('source')));
             })
           }
         }),
         rules: {
           atLeastOneMemberInList: Input.rule('list.length', function() {
-            console.log(this.get('list.length'));
             return this.get('list.length') > 0;
           })
         }
@@ -292,8 +290,34 @@ describe('Input', function() {
   });
 
   describe("incorporating read only values from children", function() {
+    beforeEach(function() {
+      input = Input.extend({
+        type: Input.reads('name.type'),
 
+        name: Input.hasOne({
+          source: "",
+          type: Ember.computed('source', function() {
+            if (this.get('source.length') > 15) {
+              return 'long';
+            } else {
+              return 'short';
+            }
+          })
+        })
+      }).create();
+    });
+
+    it("is visible on the source", function() {
+      expect(input.get('source.type')).to.equal('short');
+    });
+
+    describe("updating the child input", function() {
+      beforeEach(function() {
+        input.set('name.source', 'Phineas T. Barnstone');
+      });
+      it("updates the inputs model", function() {
+        expect(input.get('source.type')).to.equal('long');
+      });
+    });
   });
-
-
 });

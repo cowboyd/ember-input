@@ -74,16 +74,22 @@ var Input = Ember.Object.extend(PropertyBindings, {
   __bindChildValues__: Ember.observer(function() {
     var childKeys = [];
     var children = [];
+    var readKeys = [];
     this.constructor.eachComputedProperty(function(name, meta) {
       if (meta.isInput) {
         childKeys.push(name);
         children.push(this.get(name));
+      } else if (meta.isInputRead) {
+        readKeys.push(name);
       }
     }, this);
     if (childKeys.length > 0) {
       this.set('source', Ember.Object.create());
       childKeys.forEach(function(key) {
         bindProperties(this, key + ".source", "source." + key);
+      }, this);
+      readKeys.forEach(function(key) {
+        bindProperties(this, key, "source." + key);
       }, this);
     }
     this.set('_children', Ember.A(children));
@@ -142,6 +148,12 @@ Input.hasMany = function(attrs) {
       inputClass: Input.extend(attrs)
     });
   }).readOnly().meta({isInput: true});
+};
+
+Input.reads = function(dependentKey) {
+  return Ember.computed(dependentKey, function() {
+    return this.get(dependentKey);
+  }).readOnly().meta({isInputRead: true});
 };
 
 var InputList = Ember.ArrayProxy.extend({
