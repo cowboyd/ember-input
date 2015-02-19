@@ -7,9 +7,10 @@ import { RSVP, makePromise, makePromiseObject } from '../utils/make-promise';
 var a_slice = [].slice;
 
 var Form = Ember.Object.extend(PropertyBindings, {
-  propertyBindings: ['transformedValue > value', 'formattedValue > input'],
+  propertyBindings: ['mergedValue > input', 'transformedValue > value'],
   rules: {},
-  input: "",
+  isAtom: Ember.computed.equal('_children.length', 0),
+
   transform: function(input) {
     return input;
   },
@@ -20,11 +21,17 @@ var Form = Ember.Object.extend(PropertyBindings, {
       return this.get('value');
     }
   }).readOnly(),
-  format: function() {
-    return this.get('input');
+
+  merge: function(value, currentInput) {
+    if (this.get('isAtom')) {
+      return value;
+    } else {
+      return currentInput || Ember.Object.create();
+    }
   },
-  formattedValue: Ember.computed('value', 'format', function() {
-    return this.get('format').call(this, this.get('value'));
+
+  mergedValue: Ember.computed('value', function() {
+    return this.merge(this.get('value'), this.get('input'));
   }),
 
   validator: Ember.computed('rules', '_children.@each.validator', function() {
@@ -66,12 +73,11 @@ var Form = Ember.Object.extend(PropertyBindings, {
       }
     }, this);
     if (childKeys.length > 0) {
-      this.set('input', Ember.Object.create());
       childKeys.forEach(function(key) {
         bindProperties(this, key + ".input", "input." + key);
       }, this);
       readKeys.forEach(function(key) {
-        bindProperties(this, key, "input." + key);
+        bindProperties(this, key, "input." + key, true);
       }, this);
     }
     this.set('_children', Ember.A(children));

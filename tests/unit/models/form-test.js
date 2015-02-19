@@ -17,6 +17,7 @@ describe('Form', function() {
   describe('default states', function() {
     beforeEach(function() {
       form = Form.create();
+      form.set('input', '');
     });
     it("has an empty string for a input", function() {
       expect(form.get('input')).to.equal('');
@@ -25,9 +26,8 @@ describe('Form', function() {
 
   describe("with no customization", function() {
     beforeEach(function() {
-      form = Form.create({
-        input: 'foo'
-      });
+      form = Form.create();
+      form.set('input', 'foo');
     });
     it("has the same value as the input", function() {
       expect(form.get('value')).to.equal('foo');
@@ -37,7 +37,6 @@ describe('Form', function() {
   describe("with a transform", function() {
     beforeEach(function() {
       form = Form.create({
-        input: '5',
         transform: function(input) {
           return parseInt(input);
         },
@@ -47,6 +46,7 @@ describe('Form', function() {
           })
         }
       });
+      form.set('input', '5');
     });
     it('derives the value from the transform function', function() {
       expect(form.get('value')).to.equal(5);
@@ -82,7 +82,7 @@ describe('Form', function() {
             return NaN;
           }
         },
-        format: function(value) {
+        merge: function(value) {
           if (value === 5) {
             return 'five';
           } else {
@@ -197,7 +197,6 @@ describe('Form', function() {
     beforeEach(function() {
       form = Form.extend({
         number: Form.hasOne({
-          input: '5',
           transform: function(input) {
             return parseInt(input);
           },
@@ -207,14 +206,16 @@ describe('Form', function() {
             })
           }
         }),
-        string: Form.hasOne({
-          input: 'hello'
-        })
+        string: Form.hasOne()
       }).create();
+      // form.set('string.input', 'hello');
+      form.set('number.input', '5');
+      form.set('string.input', 'hello');
       isFulfilled();
     });
+
     it("has a input which is a rollup of the fields", function() {
-      expect(form.get('input.number')).to.equal('5');
+      expect(form.get('input.number')).to.equal(5);
       expect(form.get('input.string')).to.equal('hello');
     });
     describe("changing one of the subfields", function() {
@@ -223,7 +224,7 @@ describe('Form', function() {
         form.set('string.input', 'goodbye');
       });
       it("updates the rollup", function() {
-        expect(form.get('input.number')).to.equal('10');
+        expect(form.get('input.number')).to.equal(10);
         expect(form.get('input.string')).to.equal('goodbye');
       });
     });
@@ -249,7 +250,6 @@ describe('Form', function() {
         type: Form.reads('name.type'),
 
         name: Form.hasOne({
-          input: "",
           type: Ember.computed('input', function() {
             if (this.get('input.length') > 15) {
               return 'long';
@@ -259,6 +259,7 @@ describe('Form', function() {
           })
         })
       }).create();
+      form.set('name.input', '');
     });
 
     it("is visible on the input", function() {
