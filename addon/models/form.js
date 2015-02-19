@@ -25,7 +25,7 @@ function promise(start) {
   return createPromiseObject(new Ember.RSVP.Promise(start));
 }
 
-var Input = Ember.Object.extend(PropertyBindings, {
+var Form = Ember.Object.extend(PropertyBindings, {
   propertyBindings: ['transformedValue > output', 'formattedValue > source'],
   rules: {},
   source: "",
@@ -77,10 +77,10 @@ var Input = Ember.Object.extend(PropertyBindings, {
     var children = [];
     var readKeys = [];
     this.constructor.eachComputedProperty(function(name, meta) {
-      if (meta.isInput) {
+      if (meta.isForm) {
         childKeys.push(name);
         children.push(this.get(name));
-      } else if (meta.isInputRead) {
+      } else if (meta.isFormRead) {
         readKeys.push(name);
       }
     }, this);
@@ -105,7 +105,7 @@ var Input = Ember.Object.extend(PropertyBindings, {
   }
 });
 
-Input.rule = function(fn) {
+Form.rule = function(fn) {
   var args;
   if (arguments.length > 1) {
     args = a_slice.call(arguments);
@@ -127,7 +127,7 @@ Input.rule = function(fn) {
           reject();
         }
       } else {
-        Ember.assert("Input.rule should be called with either 0 or 2 arguments", false);
+        Ember.assert("Form.rule should be called with either 0 or 2 arguments", false);
       }
     });
   });
@@ -135,30 +135,30 @@ Input.rule = function(fn) {
   return Ember.computed.apply(Ember, args);
 };
 
-Input.hasOne = function(attrs) {
+Form.hasOne = function(attrs) {
   attrs = attrs || {};
   return Ember.computed(function() {
-    return Input.extend(attrs).create();
-  }).meta({isInput: true});
+    return Form.extend(attrs).create();
+  }).meta({isForm: true});
 };
 
-Input.hasMany = function(attrs) {
+Form.hasMany = function(attrs) {
   attrs = attrs || {};
   return Ember.computed(function() {
-    return InputList.create({
-      inputClass: Input.extend(attrs)
+    return FormList.create({
+      inputClass: Form.extend(attrs)
     });
-  }).readOnly().meta({isInput: true});
+  }).readOnly().meta({isForm: true});
 };
 
-Input.reads = function(dependentKey) {
+Form.reads = function(dependentKey) {
   return Ember.computed(dependentKey, function() {
     return this.get(dependentKey);
-  }).readOnly().meta({isInputRead: true});
+  }).readOnly().meta({isFormRead: true});
 };
 
-var InputList = Ember.ArrayProxy.extend({
-  inputClass: Input.extend(),
+var FormList = Ember.ArrayProxy.extend({
+  inputClass: Form.extend(),
   createObject: function(source) {
     var list = this;
     var input = this.get('inputClass').create({source: source});
@@ -195,4 +195,4 @@ var Validator = Ember.Object.extend({
   isFulfilled: readOnly('validation.isFulfilled')
 });
 
-export default Input;
+export default Form;

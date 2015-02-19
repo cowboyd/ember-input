@@ -1,3 +1,3 @@
-import Input from './models/input';
+import Form from './models/form';
 
-export default Input;
+export default Form;
