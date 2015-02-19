@@ -1,17 +1,10 @@
 import Ember from 'ember';
 import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
+import { compute, readOnly } from '../utils/compute';
 
 var RSVP = Ember.RSVP;
 var a_slice = [].slice;
-
-function computed(dependentKeys, fn) {
-  return Ember.computed.apply(Ember, dependentKeys.concat([fn]));
-}
-
-function readOnly(key) {
-  return Ember.computed.readOnly(key);
-}
 
 function createPromiseObject(promise) {
   var object = PromiseObject.create();
@@ -56,7 +49,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
 
       validators: this.get('_children').mapBy('validator'),
 
-      validation: computed(dependentKeys, function() {
+      validation: compute(dependentKeys, function() {
         var properties = this.getProperties(keys);
         var input = this.get('input');
         var children = input.get('_childKeys').reduce(function(hash, key) {
