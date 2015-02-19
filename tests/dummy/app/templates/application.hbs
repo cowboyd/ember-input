@@ -1,3 +1,19 @@
-<h2 id="title">Welcome to Ember.js</h2>
+<!-- card validation -->
+<p>Card Number:</p>
+{{input value=form.number}}
+{{input type="checkbox" value=validation.number.longEnough.isFulfilled disabled=true}} Long Enough?
+{{input type="checkbox" value=validation.number.unique.isFullfilled disabled=true}} Unique? {{#if validation.number.unique.isPending}}checking server....{{/if}}
 
-{{outlet}}
+{{#if validation.number.isFulfilled}}
+  Valid
+{{else}}
+  Invalid
+{{/if}}
+{{form.type}}
+<p>Name:</p>
+{{input value=form.name class="spec-cc-name"}}
+<p>Expiration:</p>
+{{input value=form.expirationDate class="spec-cc-exp"}}
+<p>CCV:</p>
+{{input value=form.ccv class="spec-cc-ccv"}}
+<button class="spec-pay-button" {{bind-attr disabled="validation.isNotFulfilled"}} {{action "submitCard" form}}>Pay!</button>
