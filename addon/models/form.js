@@ -2,21 +2,9 @@ import Ember from 'ember';
 import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
 import { compute, readOnly } from '../utils/compute';
+import { RSVP, makePromise, makePromiseObject } from '../utils/make-promise';
 
-var RSVP = Ember.RSVP;
 var a_slice = [].slice;
-
-function createPromiseObject(promise) {
-  var object = PromiseObject.create();
-  object.set('promise', promise);
-  return object;
-}
-
-var PromiseObject = Ember.Object.extend(Ember.PromiseProxyMixin);
-
-function promise(start) {
-  return createPromiseObject(new Ember.RSVP.Promise(start));
-}
 
 var Form = Ember.Object.extend(PropertyBindings, {
   propertyBindings: ['transformedValue > value', 'formattedValue > input'],
@@ -60,7 +48,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
         Ember.merge(properties, {
           _children: RSVP.hash(children)
         });
-        return createPromiseObject(RSVP.hash(properties));
+        return makePromiseObject(RSVP.hash(properties));
       }).readOnly()
     }).create();
   }).readOnly(),
@@ -110,7 +98,7 @@ Form.rule = function(fn) {
 
   args.push(function thunk() {
     var input = this.get('input');
-    return promise(function(resolve, reject) {
+    return makePromise(function(resolve, reject) {
       if (fn.length === 2) {
         fn.call(input, resolve, reject);
       } else if (fn.length === 0){
