@@ -14,6 +14,15 @@ describe('Input', function() {
     return input.get('validator.isFulfilled');
   }
 
+  describe('default states', function() {
+    beforeEach(function() {
+      input = Input.create();
+    });
+    it("has an empty string for a source", function() {
+      expect(input.get('source')).to.equal('');
+    });
+  });
+
   describe("with no customization", function() {
     beforeEach(function() {
       input = Input.create({

@@ -28,6 +28,7 @@ function promise(start) {
 var Input = Ember.Object.extend(PropertyBindings, {
   propertyBindings: ['transformedValue > output', 'formattedValue > source'],
   rules: {},
+  source: "",
   transform: function(source) {
     return source;
   },
