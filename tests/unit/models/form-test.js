@@ -18,18 +18,18 @@ describe('Form', function() {
     beforeEach(function() {
       form = Form.create();
     });
-    it("has an empty string for a source", function() {
-      expect(form.get('source')).to.equal('');
+    it("has an empty string for a input", function() {
+      expect(form.get('input')).to.equal('');
     });
   });
 
   describe("with no customization", function() {
     beforeEach(function() {
       form = Form.create({
-        source: 'foo'
+        input: 'foo'
       });
     });
-    it("has the same output as the source", function() {
+    it("has the same output as the input", function() {
       expect(form.get('output')).to.equal('foo');
     });
   });
@@ -37,13 +37,13 @@ describe('Form', function() {
   describe("with a transform", function() {
     beforeEach(function() {
       form = Form.create({
-        source: '5',
-        transform: function(source) {
-          return parseInt(source);
+        input: '5',
+        transform: function(input) {
+          return parseInt(input);
         },
         rules: {
-          anInteger: Form.rule('source', function() {
-            return !isNaN(parseInt(this.get('source')));
+          anInteger: Form.rule('input', function() {
+            return !isNaN(parseInt(this.get('input')));
           })
         }
       });
@@ -51,17 +51,17 @@ describe('Form', function() {
     it('derives the output from the transform function', function() {
       expect(form.get('output')).to.equal(5);
     });
-    describe("if the source is set to an invalid value", function() {
+    describe("if the input is set to an invalid value", function() {
       beforeEach(function() {
-        form.set('source', 'five');
+        form.set('input', 'five');
       });
       it("keeps the same output", function() {
         expect(form.get('output')).to.equal(5);
       });
     });
-    describe("if the source is set to another valid value", function() {
+    describe("if the input is set to another valid value", function() {
       beforeEach(function() {
-        form.set('source', '10');
+        form.set('input', '10');
       });
       it("switches to that output", function() {
         expect(form.get('output')).to.equal(10);
@@ -73,10 +73,10 @@ describe('Form', function() {
     beforeEach(function() {
       form = Form.create({
         output: 5,
-        transform: function(source) {
-          if (source === 'not five') {
+        transform: function(input) {
+          if (input === 'not five') {
             return 6;
-          } else if (source === 'five') {
+          } else if (input === 'five') {
             return 5;
           } else {
             return NaN;
@@ -92,14 +92,14 @@ describe('Form', function() {
       });
     });
     it("is formatted correctly", function() {
-      expect(form.get('source')).to.equal('five');
+      expect(form.get('input')).to.equal('five');
     });
     describe("when the output changes", function() {
       beforeEach(function() {
         form.set('output', 6);
       });
       it("updates the formatted value", function() {
-        expect(form.get('source')).to.equal('not five');
+        expect(form.get('input')).to.equal('not five');
       });
     });
   });
@@ -116,9 +116,9 @@ describe('Form', function() {
       expect(form.get('validator.isRejected')).to.equal(false);
     });
 
-    describe("pushing any kind of nonsense into its source", function() {
+    describe("pushing any kind of nonsense into its input", function() {
       beforeEach(function() {
-        form.set('source', 'xyz%^((()))');
+        form.set('input', 'xyz%^((()))');
       });
       it("remains valid", function() {
         expect(form.get('validator.isFulfilled')).to.equal(true);
@@ -131,8 +131,8 @@ describe('Form', function() {
     beforeEach(function() {
       form = Form.extend({
         rules: {
-          longEnough: Form.rule('source.length', function() {
-            return this.get('source.length') > 3;
+          longEnough: Form.rule('input.length', function() {
+            return this.get('input.length') > 3;
           })
         }
       }).create();
@@ -145,7 +145,7 @@ describe('Form', function() {
     });
     describe("updating the input", function() {
       beforeEach(function() {
-        form.set('source', 'football');
+        form.set('input', 'football');
       });
       it("becomes valid", function() {
         expect(isFulfilled()).to.equal(true);
@@ -163,7 +163,7 @@ describe('Form', function() {
       });
       form = Form.extend({
         rules: {
-          angusMcAsync: Form.rule('source', function(resolve, reject) {
+          angusMcAsync: Form.rule('input', function(resolve, reject) {
             return spy(resolve, reject);
           })
         }
@@ -197,105 +197,44 @@ describe('Form', function() {
     beforeEach(function() {
       form = Form.extend({
         number: Form.hasOne({
-          source: '5',
-          transform: function(source) {
-            return parseInt(source);
+          input: '5',
+          transform: function(input) {
+            return parseInt(input);
           },
           rules: {
-            aNumber: Form.rule('source', function() {
-              return !isNaN(parseInt(this.get('source')));
+            aNumber: Form.rule('input', function() {
+              return !isNaN(parseInt(this.get('input')));
             })
           }
         }),
         string: Form.hasOne({
-          source: 'hello'
+          input: 'hello'
         })
       }).create();
       isFulfilled();
     });
-    it("has a source which is a rollup of the fields", function() {
-      expect(form.get('source.number')).to.equal('5');
-      expect(form.get('source.string')).to.equal('hello');
+    it("has a input which is a rollup of the fields", function() {
+      expect(form.get('input.number')).to.equal('5');
+      expect(form.get('input.string')).to.equal('hello');
     });
     describe("changing one of the subfields", function() {
       beforeEach(function() {
-        form.set('number.source', '10');
-        form.set('string.source', 'goodbye');
+        form.set('number.input', '10');
+        form.set('string.input', 'goodbye');
       });
       it("updates the rollup", function() {
-        expect(form.get('source.number')).to.equal('10');
-        expect(form.get('source.string')).to.equal('goodbye');
+        expect(form.get('input.number')).to.equal('10');
+        expect(form.get('input.string')).to.equal('goodbye');
       });
     });
     describe("with an invalid subfield", function() {
       beforeEach(function() {
-        form.set('source.number', 'five');
+        form.set('input.number', 'five');
       });
 
       it("is not valid", function() {
         expect(form.get('number.validator.isRejected')).to.equal(true);
         expect(form.get('validator.isRejected')).to.equal(true);
-      });
-    });
-  });
-
-  describe("with a collection of objects as a field", function() {
-    beforeEach(function() {
-      form = Form.extend({
-        list: Form.hasMany({
-          rules: {
-            aNumber: Form.rule('source', function() {
-              var val = !isNaN(parseInt(this.get('source')));
-              return !isNaN(parseInt(this.get('source')));
-            })
-          }
-        }),
-        rules: {
-          atLeastOneMemberInList: Form.rule('list.length', function() {
-            return this.get('list.length') > 0;
-          })
-        }
-      }).create();
-    });
-    it("is empty to start out with", function() {
-      expect(form.get('list.length')).to.equal(0);
-    });
-    it("can have validation rules that depend on it", function() {
-      expect(form.get('validator.isRejected')).to.equal(true);
-    });
-
-    describe("adding a member to the list", function() {
-      var member;
-      beforeEach(function() {
-        member = form.get('list').createObject('5');
-      });
-      it("has the same value as the input's source in the list", function() {
-        expect(form.get('list.firstObject.source')).to.equal('5');
-      });
-      it("becomes valid", function() {
-        expect(form.get('validator.isFulfilled')).to.equal(true);
-      });
-
-      describe("setting the single object to an invalid value", function() {
-        beforeEach(function() {
-          form.set('list.firstObject.source', 'five');
-        });
-
-        it("makes the list invalid", function() {
-          expect(form.get('list.firstObject.validator.isRejected')).to.equal(true);
-          expect(form.get('list.validator.isRejected')).to.equal(true);
-        });
-        it("causes the entire input to fail validation", function() {
-          expect(form.get('validator.isRejected')).to.equal(true);
-        });
-      });
-      describe("removing a member from the list", function() {
-        beforeEach(function() {
-          member.remove();
-        });
-        it("removes itself from the list", function() {
-          expect(form.get('list.length')).to.equal(0);
-        });
       });
     });
   });
@@ -310,9 +249,9 @@ describe('Form', function() {
         type: Form.reads('name.type'),
 
         name: Form.hasOne({
-          source: "",
-          type: Ember.computed('source', function() {
-            if (this.get('source.length') > 15) {
+          input: "",
+          type: Ember.computed('input', function() {
+            if (this.get('input.length') > 15) {
               return 'long';
             } else {
               return 'short';
@@ -322,16 +261,16 @@ describe('Form', function() {
       }).create();
     });
 
-    it("is visible on the source", function() {
-      expect(form.get('source.type')).to.equal('short');
+    it("is visible on the input", function() {
+      expect(form.get('input.type')).to.equal('short');
     });
 
     describe("updating the child input", function() {
       beforeEach(function() {
-        form.set('name.source', 'Phineas T. Barnstone');
+        form.set('name.input', 'Phineas T. Barnstone');
       });
       it("updates the inputs model", function() {
-        expect(form.get('source.type')).to.equal('long');
+        expect(form.get('input.type')).to.equal('long');
       });
     });
   });

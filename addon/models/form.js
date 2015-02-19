@@ -26,21 +26,21 @@ function promise(start) {
 }
 
 var Form = Ember.Object.extend(PropertyBindings, {
-  propertyBindings: ['transformedValue > output', 'formattedValue > source'],
+  propertyBindings: ['transformedValue > output', 'formattedValue > input'],
   rules: {},
-  source: "",
-  transform: function(source) {
-    return source;
+  input: "",
+  transform: function(input) {
+    return input;
   },
-  transformedValue: Ember.computed('validator.isFulfilled', 'source', function() {
+  transformedValue: Ember.computed('validator.isFulfilled', 'input', function() {
     if (this.get('validator.isFulfilled')) {
-      return this.transform(this.get('source'));
+      return this.transform(this.get('input'));
     } else {
       return this.get('output');
     }
   }).readOnly(),
   format: function() {
-    return this.get('source');
+    return this.get('input');
   },
   formattedValue: Ember.computed('output', 'format', function() {
     return this.get('format').call(this, this.get('output'));
@@ -85,12 +85,12 @@ var Form = Ember.Object.extend(PropertyBindings, {
       }
     }, this);
     if (childKeys.length > 0) {
-      this.set('source', Ember.Object.create());
+      this.set('input', Ember.Object.create());
       childKeys.forEach(function(key) {
-        bindProperties(this, key + ".source", "source." + key);
+        bindProperties(this, key + ".input", "input." + key);
       }, this);
       readKeys.forEach(function(key) {
-        bindProperties(this, key, "source." + key);
+        bindProperties(this, key, "input." + key);
       }, this);
     }
     this.set('_children', Ember.A(children));
@@ -142,53 +142,13 @@ Form.hasOne = function(attrs) {
   }).meta({isForm: true});
 };
 
-Form.hasMany = function(attrs) {
-  attrs = attrs || {};
-  return Ember.computed(function() {
-    return FormList.create({
-      inputClass: Form.extend(attrs)
-    });
-  }).readOnly().meta({isForm: true});
-};
-
 Form.reads = function(dependentKey) {
   return Ember.computed(dependentKey, function() {
     return this.get(dependentKey);
   }).readOnly().meta({isFormRead: true});
 };
 
-var FormList = Ember.ArrayProxy.extend({
-  inputClass: Form.extend(),
-  createObject: function(source) {
-    var list = this;
-    var input = this.get('inputClass').create({source: source});
-    this.pushObject(input);
-    input.remove = function() {
-      list.removeObject(this);
-    };
-    return input;
-  },
-  content: Ember.computed(function() {
-    return Ember.A();
-  }).readOnly(),
-  validators: Ember.computed.mapBy('content', 'validator'),
-  validator: Ember.computed(function() {
-    var list = this;
-
-    return Validator.extend({
-      input: list,
-      validators: readOnly('input.validators'),
-      validation: Ember.computed('validators.@each.isPending', function() {
-        return createPromiseObject(RSVP.all(list.map(function(input) {
-          return input.get('validator.validation');
-        })));
-      })
-    }).create();
-  })
-});
-
 var Validator = Ember.Object.extend({
-  input: Ember.required(),
   isPending: readOnly('validation.isPending'),
   isSettled: readOnly('validation.isSettled'),
   isRejected: readOnly('validation.isRejected'),
