@@ -29,8 +29,8 @@ describe('Form', function() {
         input: 'foo'
       });
     });
-    it("has the same output as the input", function() {
-      expect(form.get('output')).to.equal('foo');
+    it("has the same value as the input", function() {
+      expect(form.get('value')).to.equal('foo');
     });
   });
 
@@ -48,23 +48,23 @@ describe('Form', function() {
         }
       });
     });
-    it('derives the output from the transform function', function() {
-      expect(form.get('output')).to.equal(5);
+    it('derives the value from the transform function', function() {
+      expect(form.get('value')).to.equal(5);
     });
     describe("if the input is set to an invalid value", function() {
       beforeEach(function() {
         form.set('input', 'five');
       });
-      it("keeps the same output", function() {
-        expect(form.get('output')).to.equal(5);
+      it("keeps the same value", function() {
+        expect(form.get('value')).to.equal(5);
       });
     });
     describe("if the input is set to another valid value", function() {
       beforeEach(function() {
         form.set('input', '10');
       });
-      it("switches to that output", function() {
-        expect(form.get('output')).to.equal(10);
+      it("switches to that value", function() {
+        expect(form.get('value')).to.equal(10);
       });
     });
   });
@@ -72,7 +72,7 @@ describe('Form', function() {
   describe("with custom formatting", function() {
     beforeEach(function() {
       form = Form.create({
-        output: 5,
+        value: 5,
         transform: function(input) {
           if (input === 'not five') {
             return 6;
@@ -82,8 +82,8 @@ describe('Form', function() {
             return NaN;
           }
         },
-        format: function(output) {
-          if (output === 5) {
+        format: function(value) {
+          if (value === 5) {
             return 'five';
           } else {
             return 'not five';
@@ -94,9 +94,9 @@ describe('Form', function() {
     it("is formatted correctly", function() {
       expect(form.get('input')).to.equal('five');
     });
-    describe("when the output changes", function() {
+    describe("when the value changes", function() {
       beforeEach(function() {
-        form.set('output', 6);
+        form.set('value', 6);
       });
       it("updates the formatted value", function() {
         expect(form.get('input')).to.equal('not five');

@@ -26,7 +26,7 @@ function promise(start) {
 }
 
 var Form = Ember.Object.extend(PropertyBindings, {
-  propertyBindings: ['transformedValue > output', 'formattedValue > input'],
+  propertyBindings: ['transformedValue > value', 'formattedValue > input'],
   rules: {},
   input: "",
   transform: function(input) {
@@ -36,14 +36,14 @@ var Form = Ember.Object.extend(PropertyBindings, {
     if (this.get('validator.isFulfilled')) {
       return this.transform(this.get('input'));
     } else {
-      return this.get('output');
+      return this.get('value');
     }
   }).readOnly(),
   format: function() {
     return this.get('input');
   },
-  formattedValue: Ember.computed('output', 'format', function() {
-    return this.get('format').call(this, this.get('output'));
+  formattedValue: Ember.computed('value', 'format', function() {
+    return this.get('format').call(this, this.get('value'));
   }),
 
   validator: Ember.computed('rules', '_children.@each.validator', function() {
