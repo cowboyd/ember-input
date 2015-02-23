@@ -16,7 +16,6 @@ var Form = Ember.Object.extend(PropertyBindings, {
   isAtom: Ember.computed.equal('_children.length', 0),
 
   transform: function(input) {
-    console.log('transform');
     return input;
   },
 
@@ -39,7 +38,6 @@ var Form = Ember.Object.extend(PropertyBindings, {
         console.log(key, form.get(key).get('value'), form.get(key).get('input'));
         return current;
       }, {});
-      console.log('attrs', attrs);
       return Ember.Object.create(attrs);
     }
   },
