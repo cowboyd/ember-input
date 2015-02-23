@@ -7,32 +7,42 @@ import { RSVP, makePromise, makePromiseObject } from '../utils/make-promise';
 var a_slice = [].slice;
 
 var Form = Ember.Object.extend(PropertyBindings, {
-  propertyBindings: ['mergedValue > input', 'transformedValue > value'],
+  propertyBindings: ['transformedValue > value', 'currentScope > scope', 'scope <> input'],
+
   rules: {},
+  currentScope: Ember.computed('value', '_parentForm.currentScope', function() {
+    return this.serialize(this.get('value'));
+  }),
   isAtom: Ember.computed.equal('_children.length', 0),
 
   transform: function(input) {
+    console.log('transform');
     return input;
   },
-  transformedValue: Ember.computed('validator.isFulfilled', 'input', function() {
+
+  transformedValue: Ember.computed('validator.isFulfilled', function() {
     if (this.get('validator.isFulfilled')) {
-      return this.transform(this.get('input'));
+      return this.transform(this.get('scope'));
     } else {
       return this.get('value');
     }
   }).readOnly(),
 
-  merge: function(value, currentInput) {
+
+  serialize: function(value) {
     if (this.get('isAtom')) {
       return value;
     } else {
-      return currentInput || Ember.Object.create();
+      var form = this;
+      var attrs = this.get('_childKeys').reduce(function(current, key) {
+        current[key] = form.get(key).get('value');
+        console.log(key, form.get(key).get('value'), form.get(key).get('input'));
+        return current;
+      }, {});
+      console.log('attrs', attrs);
+      return Ember.Object.create(attrs);
     }
   },
-
-  mergedValue: Ember.computed('value', function() {
-    return this.merge(this.get('value'), this.get('input'));
-  }),
 
   validator: Ember.computed('rules', '_children.@each.validator', function() {
     var rules = this.get('rules');
@@ -40,22 +50,24 @@ var Form = Ember.Object.extend(PropertyBindings, {
     var dependentKeys = keys.concat('validators.@each.isPending');
 
     return Validator.extend(rules, {
-      input: this,
+      form: this,
 
       validators: this.get('_children').mapBy('validator'),
 
       validation: compute(dependentKeys, function() {
         var properties = this.getProperties(keys);
-        var input = this.get('input');
-        var children = input.get('_childKeys').reduce(function(hash, key) {
-          hash[key] = input.get(key).get('validator.validation');
+        var form = this.get('form');
+        var children = form.get('_childKeys').reduce(function(hash, key) {
+          hash[key] = form.get(key).get('validator.validation');
           return hash;
         }, {});
 
         Ember.merge(properties, {
           _children: RSVP.hash(children)
         });
-        return makePromiseObject(RSVP.hash(properties));
+        var promise = makePromiseObject(RSVP.hash(properties));
+        console.log('promise', promise.get('promise'));
+        return promise;
       }).readOnly()
     }).create();
   }).readOnly(),
@@ -72,16 +84,16 @@ var Form = Ember.Object.extend(PropertyBindings, {
         readKeys.push(name);
       }
     }, this);
-    if (childKeys.length > 0) {
-      childKeys.forEach(function(key) {
-        bindProperties(this, key + ".input", "input." + key);
-      }, this);
-      readKeys.forEach(function(key) {
-        bindProperties(this, key, "input." + key, true);
-      }, this);
-    }
     this.set('_children', Ember.A(children));
     this.set('_childKeys', Ember.A(childKeys));
+    if (childKeys.length > 0) {
+      childKeys.forEach(function(key) {
+        bindProperties(this, key + ".currentScope", "currentScope." + key, true);
+      }, this);
+      readKeys.forEach(function(key) {
+        bindProperties(this, key, "scope." + key, true);
+      }, this);
+    }
   }).on('init'),
 
   willDestroy: function() {
@@ -98,17 +110,17 @@ Form.rule = function(fn) {
     args = a_slice.call(arguments);
     fn = args.pop();
     args = args.map(function(key) {
-      return "input." + key;
+      return "form." + key;
     });
   }
 
   args.push(function thunk() {
-    var input = this.get('input');
+    var form = this.get('form');
     return makePromise(function(resolve, reject) {
       if (fn.length === 2) {
-        fn.call(input, resolve, reject);
+        fn.call(form, resolve, reject);
       } else if (fn.length === 0){
-        if (fn.call(input)) {
+        if (fn.call(form)) {
           resolve();
         } else {
           reject();
@@ -125,7 +137,9 @@ Form.rule = function(fn) {
 Form.hasOne = function(attrs) {
   attrs = attrs || {};
   return Ember.computed(function() {
-    return Form.extend(attrs).create();
+    return Form.extend(attrs).create({
+      _parentForm: this
+    });
   }).meta({isForm: true});
 };
 
