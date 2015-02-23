@@ -12,7 +12,7 @@ describe('Form', function() {
   });
 
   function isFulfilled() {
-    return form.get('validator.isFulfilled');
+    return form.get('validation.isFulfilled');
   }
 
   describe('default states', function() {
@@ -106,13 +106,13 @@ describe('Form', function() {
   describe("with no validations at all", function() {
     beforeEach(function() {
       form = Form.extend({}).create();
-      form.get('validator.isFulfilled');
+      form.get('validation.isFulfilled');
     });
 
     it("is valid", function() {
-      expect(form.get('validator.isSettled')).to.equal(true);
-      expect(form.get('validator.isFulfilled')).to.equal(true);
-      expect(form.get('validator.isRejected')).to.equal(false);
+      expect(form.get('validation.isSettled')).to.equal(true);
+      expect(form.get('validation.isFulfilled')).to.equal(true);
+      expect(form.get('validation.isRejected')).to.equal(false);
     });
 
     describe("pushing any kind of nonsense into its input", function() {
@@ -120,7 +120,7 @@ describe('Form', function() {
         form.set('input', 'xyz%^((()))');
       });
       it("remains valid", function() {
-        expect(form.get('validator.isFulfilled')).to.equal(true);
+        expect(form.get('validation.isFulfilled')).to.equal(true);
       });
     });
 
@@ -139,8 +139,8 @@ describe('Form', function() {
       isFulfilled();
     });
     it("starts of as invalid", function() {
-      expect(form.get('validator.isFulfilled')).to.equal(false);
-      expect(form.get('validator.isRejected')).to.equal(true);
+      expect(form.get('validation.isFulfilled')).to.equal(false);
+      expect(form.get('validation.isRejected')).to.equal(true);
     });
     describe("updating the input", function() {
       beforeEach(function() {
@@ -172,7 +172,7 @@ describe('Form', function() {
 
     it("is not pending", function() {
       expect(this.spy).to.have.been.called;
-      expect(form.get('validator.isPending')).to.equal(true);
+      expect(form.get('validation.isPending')).to.equal(true);
     });
     describe("when the promise resolves", function() {
       beforeEach(function() {
@@ -235,8 +235,8 @@ describe('Form', function() {
       });
 
       it("is not valid", function() {
-        expect(form.get('number.validator.isRejected')).to.equal(true);
-        expect(form.get('validator.isRejected')).to.equal(true);
+        expect(form.get('number.validation.isRejected')).to.equal(true);
+        expect(form.get('validation.isRejected')).to.equal(true);
       });
     });
   });

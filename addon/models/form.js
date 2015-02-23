@@ -20,8 +20,8 @@ var Form = Ember.Object.extend(PropertyBindings, {
     return input;
   },
 
-  transformedValue: Ember.computed('validator.isFulfilled', function() {
-    if (this.get('validator.isFulfilled')) {
+  transformedValue: Ember.computed('validation.isFulfilled', function() {
+    if (this.get('validation.isFulfilled')) {
       return this.transform(this.get('scope'));
     } else {
       return this.get('value');
@@ -44,21 +44,21 @@ var Form = Ember.Object.extend(PropertyBindings, {
     }
   },
 
-  validator: Ember.computed('rules', '_children.@each.validator', function() {
+  validation: Ember.computed('rules', '_children.@each.validation', function() {
     var rules = this.get('rules');
     var keys = Object.keys(rules);
-    var dependentKeys = keys.concat('validators.@each.isPending');
+    var dependentKeys = keys.concat('validations.@each.isPending');
 
-    return Validator.extend(rules, {
+    return Validation.extend(rules, {
       form: this,
 
-      validators: this.get('_children').mapBy('validator'),
+      validations: this.get('_children').mapBy('validation'),
 
       result: compute(dependentKeys, function() {
         var properties = this.getProperties(keys);
         var form = this.get('form');
         var children = form.get('_childKeys').reduce(function(hash, key) {
-          hash[key] = form.get(key).get('validator.result');
+          hash[key] = form.get(key).get('validation.result');
           return hash;
         }, {});
 
@@ -149,7 +149,7 @@ Form.reads = function(dependentKey) {
   }).readOnly().meta({isFormRead: true});
 };
 
-var Validator = Ember.Object.extend({
+var Validation = Ember.Object.extend({
   isPending: readOnly('result.isPending'),
   isSettled: readOnly('result.isSettled'),
   isRejected: readOnly('result.isRejected'),
