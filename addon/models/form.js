@@ -90,7 +90,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
     this.set('_childKeys', Ember.A(childKeys));
     if (childKeys.length > 0) {
       childKeys.forEach(function(key) {
-        bindProperties(this, key + ".currentScope", "currentScope." + key, true);
+        bindProperties(this, key + ".currentScope", "currentScope." + key);
       }, this);
       readKeys.forEach(function(key) {
         bindProperties(this, key, "scope." + key, true);

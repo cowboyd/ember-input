@@ -192,7 +192,7 @@ describe('Form', function() {
     });
   });
 
-  describe.only("with multiple atomic fields", function() {
+  describe("with multiple atomic fields", function() {
     beforeEach(function() {
       form = Form.extend({
         number: Form.hasOne({
@@ -228,7 +228,7 @@ describe('Form', function() {
     });
     describe("with an invalid subfield", function() {
       beforeEach(function() {
-        form.set('input.number', 'five');
+        form.set('scope.number', 'five');
       });
 
       it("is not valid", function() {
