@@ -45,7 +45,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
   validation: Ember.computed('rules', '_children.@each.validation', function() {
     var rules = this.get('rules');
     var keys = Object.keys(rules);
-    var dependentKeys = keys.concat('validations.@each.isPending');
+    var dependentKeys = keys.concat('validations.@each.result');
 
     var result = compute(dependentKeys, function() {
       var properties = this.getProperties(keys);
