@@ -65,9 +65,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
         Ember.merge(properties, {
           _children: RSVP.hash(children)
         });
-        var promise = makePromiseObject(RSVP.hash(properties));
-        console.log('promise', promise.get('promise'));
-        return promise;
+        return makePromiseObject(RSVP.hash(properties));
       }).readOnly()
     }).create();
   }).readOnly(),
