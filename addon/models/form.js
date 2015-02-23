@@ -35,9 +35,11 @@ var Form = Ember.Object.extend(PropertyBindings, {
       var form = this;
       var attrs = this.get('_childKeys').reduce(function(current, key) {
         current[key] = form.get(key).get('value');
-        console.log(key, form.get(key).get('value'), form.get(key).get('input'));
         return current;
       }, {});
+      this.get('_readKeys').reduce(function(current, key) {
+        current[key] = form.get(key);
+      }, attrs);
       return Ember.Object.create(attrs);
     }
   },
@@ -88,12 +90,13 @@ var Form = Ember.Object.extend(PropertyBindings, {
     }, this);
     this.set('_children', Ember.A(children));
     this.set('_childKeys', Ember.A(childKeys));
+    this.set('_readKeys', Ember.A(readKeys));
     if (childKeys.length > 0) {
       childKeys.forEach(function(key) {
         bindProperties(this, key + ".currentScope", "currentScope." + key);
       }, this);
       readKeys.forEach(function(key) {
-        bindProperties(this, key, "scope." + key, true);
+        bindProperties(this, key, "currentScope." + key, true).toString();
       }, this);
     }
   }).on('init'),

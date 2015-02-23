@@ -260,9 +260,7 @@ describe('Form', function() {
       }).create();
     });
 
-
-
-    it.skip("is visible on the input", function() {
+    it("is visible on the input", function() {
       expect(form.get('scope.type')).to.equal('short');
     });
 
