@@ -192,7 +192,7 @@ describe('Form', function() {
     });
   });
 
-  describe.skip("with multiple atomic fields", function() {
+  describe.only("with multiple atomic fields", function() {
     beforeEach(function() {
       form = Form.extend({
         number: Form.hasOne({
@@ -207,7 +207,6 @@ describe('Form', function() {
         }),
         string: Form.hasOne()
       }).create();
-      // form.set('string.input', 'hello');
       form.set('number.input', '5');
       form.set('string.input', 'hello');
       isFulfilled();
@@ -221,11 +220,9 @@ describe('Form', function() {
       beforeEach(function() {
         form.set('string.input', 'goodbye');
         form.set('number.input', '10');
-        console.log('!', form.get('string.input'));
       });
       it("updates the rollup", function() {
         expect(form.get('input.number')).to.equal(10);
-        console.log('?', form.get('string.input'));
         expect(form.get('input.string')).to.equal('goodbye');
       });
     });
@@ -235,8 +232,8 @@ describe('Form', function() {
       });
 
       it("is not valid", function() {
-        expect(form.get('number.validation.isRejected')).to.equal(true);
         expect(form.get('validation.isRejected')).to.equal(true);
+        expect(form.get('number.validation.isRejected')).to.equal(true);
       });
     });
   });

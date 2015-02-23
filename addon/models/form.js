@@ -49,24 +49,30 @@ var Form = Ember.Object.extend(PropertyBindings, {
     var keys = Object.keys(rules);
     var dependentKeys = keys.concat('validations.@each.isPending');
 
+    var result = compute(dependentKeys, function() {
+      var properties = this.getProperties(keys);
+      var form = this.get('form');
+      var children = form.get('_childKeys').reduce(function(hash, key) {
+        hash[key] = form.get(key).get('validation.result');
+        return hash;
+      }, {});
+
+      Ember.merge(properties, {
+        _children: RSVP.hash(children)
+      });
+      return makePromiseObject(RSVP.hash(properties));
+    }).readOnly();
+    if (keys.length === 0 && this.get('_childKeys.length') === 0) {
+      result = Ember.computed('form.input', function() {
+        return makePromiseObject(RSVP.resolve());
+      });
+    }
     return Validation.extend(rules, {
       form: this,
 
       validations: this.get('_children').mapBy('validation'),
 
-      result: compute(dependentKeys, function() {
-        var properties = this.getProperties(keys);
-        var form = this.get('form');
-        var children = form.get('_childKeys').reduce(function(hash, key) {
-          hash[key] = form.get(key).get('validation.result');
-          return hash;
-        }, {});
-
-        Ember.merge(properties, {
-          _children: RSVP.hash(children)
-        });
-        return makePromiseObject(RSVP.hash(properties));
-      }).readOnly()
+      result: result
     }).create();
   }).readOnly(),
 
