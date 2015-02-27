@@ -44,8 +44,8 @@ var Form = Ember.Object.extend(PropertyBindings, {
     }
   },
 
-  validation: Ember.computed('rules', '_children.@each.validation', function() {
-    var rules = this.get('rules');
+  validation: Ember.computed('rules', '_children.@each', function() {
+    var rules = this.get('rules') || {};
     var keys = Object.keys(rules);
     var dependentKeys = keys.concat('_children.@each.result');
 
@@ -67,7 +67,17 @@ var Form = Ember.Object.extend(PropertyBindings, {
         return makePromiseObject(RSVP.resolve());
       });
     }
-    return Validation.extend(rules, {
+
+    var children = this.get('_childKeys').reduce(function(children, name) {
+      var child = Ember.computed.reads('_form.' + name + '.validation');
+      children[name] = child;
+      return child;
+    }, {});
+
+    // ("validation.creditCardNumber.isRejected"); //=> Validation
+    // ("validation.rules.cardNumberPresent.isFulfilled"); //=> Promise
+
+    return Validation.extend(rules, children, {
       _form: this,
       _children: Ember.computed.mapBy('_form._children', 'validation'),
       result: result

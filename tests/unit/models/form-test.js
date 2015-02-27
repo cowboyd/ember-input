@@ -136,7 +136,6 @@ describe('Form', function() {
         }
       }).create();
 
-      isFulfilled();
     });
     it("starts of as invalid", function() {
       expect(form.get('validation.isFulfilled')).to.equal(false);
@@ -167,7 +166,6 @@ describe('Form', function() {
           })
         }
       }).create();
-      isFulfilled();
     });
 
     it("is not pending", function() {
@@ -209,7 +207,6 @@ describe('Form', function() {
       }).create();
       form.set('number.input', '5');
       form.set('string.input', 'hello');
-      isFulfilled();
     });
 
     it("has a input which is a rollup of the fields", function() {
@@ -238,9 +235,6 @@ describe('Form', function() {
     });
   });
 
-  describe.skip("with a validation that has dependencies", function() {
-
-  });
 
   describe("incorporating read only values from children", function() {
     beforeEach(function() {
@@ -272,5 +266,71 @@ describe('Form', function() {
         expect(form.get('input.type')).to.equal('long');
       });
     });
+  });
+
+  describe.skip("validation context", function() {
+    beforeEach(function() {
+      form = Form.extend({
+        name: Form.hasOne({
+          rules: {
+            longish: Form.rule('input', function() {
+              return this.get('input.length') > 5;
+            }),
+            hasNumbers: Form.rule('input', function() {
+              return /\d/.test('input');
+            })
+          }
+        }),
+        rules: {
+          hasName: Form.rule('scope.name', function() {
+            return !Ember.isEmpty(this.get('scope.name'));
+          })
+        }
+      }).create();
+    });
+
+    it("is invalid at the top level", function() {
+      expect(form.get('validation.isRejected')).to.equal(true);
+    });
+    it("allows access to the specific rule", function() {
+      expect(form.get('validation.rules.hasName.isRejected')).to.equal(true);
+      expect(form.get('validation.rules.firstObject.isRejected')).to.equal(true);
+    });
+    it("allows access child properties", function() {
+      expect(form.get('validation.name.isRejected')).to.equal(true);
+    });
+    it("allows access to individual rules on a child property", function() {
+      expect(form.get('validation.name.rules.longish.isRejected')).to.equal(true);
+      expect(form.get('validation.name.rules.hasNumber.isRejected')).to.equal(true);
+    });
+    it("has a progress api", function() {
+      expect(form.get('validation.progress.ratio')).to.equal(0);
+      expect(form.get('validation.progress.percentage')).to.equal(0);
+      expect(form.get('validation.name.progress.ratio')).to.equal(0);
+      expect(form.get('validation.name.progress.percentage')).to.equal(0);
+    });
+    describe("entering in some valid (although not fully valid input)", function() {
+      beforeEach(function() {
+        form.set('scope.name', 'C3P0');
+      });
+      it("is still rejected", function() {
+        expect(form.get('validation.isRejected')).to.equal(true);
+      });
+      it("updates the progress of the validation", function() {
+        expect(form.get('validation.rules.hasName.isFulfilled')).to.equal(true);
+        expect(form.get('validation.progress.ratio')).to.equal(0.66);
+        expect(form.get('validation.progress.percentage')).to.equal(66);
+        expect(form.get('validation.name.progress.percentage')).to.equal(0.5);
+      });
+      it("can access invididual rules as a list", function() {
+        expect(form.get('validation.rules.firstObject.isFulfilled')).to.equal(true);
+      });
+    });
+
+  });
+
+
+  describe.skip("with a validation that has dependencies", function() {
+
   });
 });
