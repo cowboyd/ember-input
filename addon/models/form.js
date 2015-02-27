@@ -47,11 +47,11 @@ var Form = Ember.Object.extend(PropertyBindings, {
   validation: Ember.computed('rules', '_children.@each.validation', function() {
     var rules = this.get('rules');
     var keys = Object.keys(rules);
-    var dependentKeys = keys.concat('validations.@each.result');
+    var dependentKeys = keys.concat('_children.@each.result');
 
     var result = compute(dependentKeys, function() {
       var properties = this.getProperties(keys);
-      var form = this.get('form');
+      var form = this.get('_form');
       var children = form.get('_childKeys').reduce(function(hash, key) {
         hash[key] = form.get(key).get('validation.result');
         return hash;
@@ -63,15 +63,13 @@ var Form = Ember.Object.extend(PropertyBindings, {
       return makePromiseObject(RSVP.hash(properties));
     }).readOnly();
     if (keys.length === 0 && this.get('_childKeys.length') === 0) {
-      result = Ember.computed('form.input', function() {
+      result = Ember.computed('_form.scope', function() {
         return makePromiseObject(RSVP.resolve());
       });
     }
     return Validation.extend(rules, {
-      form: this,
-
-      validations: this.get('_children').mapBy('validation'),
-
+      _form: this,
+      _children: Ember.computed.mapBy('_form._children', 'validation'),
       result: result
     }).create();
   }).readOnly(),
@@ -115,12 +113,12 @@ Form.rule = function(fn) {
     args = a_slice.call(arguments);
     fn = args.pop();
     args = args.map(function(key) {
-      return "form." + key;
+      return "_form." + key;
     });
   }
 
   args.push(function thunk() {
-    var form = this.get('form');
+    var form = this.get('_form');
     return makePromise(function(resolve, reject) {
       if (fn.length === 2) {
         fn.call(form, resolve, reject);
