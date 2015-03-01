@@ -47,7 +47,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
 
   ruleSet: Ember.computed('rules', function() {
     return RuleSet.create({
-      _form: this,
+      form: this,
       definition: this.get('rules')
     });
   }),
@@ -97,12 +97,12 @@ Form.rule = function(fn) {
     args = a_slice.call(arguments);
     fn = args.pop();
     args = args.map(function(key) {
-      return "_form." + key;
+      return "form." + key;
     });
   }
 
   args.push(function thunk() {
-    var form = this.get('_form');
+    var form = this.get('form');
     return makePromise(function(resolve, reject) {
       if (fn.length === 2) {
         fn.call(form, resolve, reject);
