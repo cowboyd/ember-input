@@ -1,8 +1,9 @@
 import Ember from 'ember';
 import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
-import { compute, readOnly } from '../utils/compute';
-import { RSVP, makePromise, makePromiseObject } from '../utils/make-promise';
+import { readOnly } from '../utils/compute';
+import { makePromise } from '../utils/make-promise';
+import { RuleSet } from './rule';
 
 var a_slice = [].slice;
 
@@ -44,44 +45,17 @@ var Form = Ember.Object.extend(PropertyBindings, {
     }
   },
 
-  validation: Ember.computed('rules', '_children.@each', function() {
-    var rules = this.get('rules') || {};
-    var keys = Object.keys(rules);
-    var dependentKeys = keys.concat('_children.@each.result');
-
-    var result = compute(dependentKeys, function() {
-      var properties = this.getProperties(keys);
-      var form = this.get('_form');
-      var children = form.get('_childKeys').reduce(function(hash, key) {
-        hash[key] = form.get(key).get('validation.result');
-        return hash;
-      }, {});
-
-      Ember.merge(properties, {
-        _children: RSVP.hash(children)
-      });
-      return makePromiseObject(RSVP.hash(properties));
-    }).readOnly();
-    if (keys.length === 0 && this.get('_childKeys.length') === 0) {
-      result = Ember.computed('_form.scope', function() {
-        return makePromiseObject(RSVP.resolve());
-      });
-    }
-
-    var children = this.get('_childKeys').reduce(function(children, name) {
-      var child = Ember.computed.reads('_form.' + name + '.validation');
-      children[name] = child;
-      return child;
-    }, {});
-
-    // ("validation.creditCardNumber.isRejected"); //=> Validation
-    // ("validation.rules.cardNumberPresent.isFulfilled"); //=> Promise
-
-    return Validation.extend(rules, children, {
+  ruleSet: Ember.computed('rules', function() {
+    return RuleSet.create({
       _form: this,
-      _children: Ember.computed.mapBy('_form._children', 'validation'),
-      result: result
-    }).create();
+      definition: this.get('rules')
+    });
+  }),
+
+  validation: Ember.computed('ruleSet', function() {
+    return Validation.create({
+      _ruleSet: this.get('ruleSet')
+    });
   }).readOnly(),
 
   __bindChildValues__: Ember.observer(function() {
@@ -163,10 +137,10 @@ Form.reads = function(dependentKey) {
 };
 
 var Validation = Ember.Object.extend({
-  isPending: readOnly('result.isPending'),
-  isSettled: readOnly('result.isSettled'),
-  isRejected: readOnly('result.isRejected'),
-  isFulfilled: readOnly('result.isFulfilled')
+  isPending: readOnly('_ruleSet.result.isPending'),
+  isSettled: readOnly('_ruleSet.result.isSettled'),
+  isRejected: readOnly('_ruleSet.result.isRejected'),
+  isFulfilled: readOnly('_ruleSet.result.isFulfilled')
 });
 
 export default Form;

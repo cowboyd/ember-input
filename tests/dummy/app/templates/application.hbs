@@ -1,8 +1,11 @@
 <!-- card validation -->
 <p>Card Number:</p>
 {{input value=form.number}}
-{{input type="checkbox" value=validation.number.longEnough.isFulfilled disabled=true}} Long Enough?
-{{input type="checkbox" value=validation.number.unique.isFullfilled disabled=true}} Unique? {{#if validation.number.unique.isPending}}checking server....{{/if}}
+
+<ul> {{input type="checkbox" value=validation.number.isFulfilled}}
+  <li>{{input type="checkbox" value=validation.number.longEnough.isFulfilled disabled=true}} Long Enough?</li>
+  <li>{{input type="checkbox" value=validation.number.unique.isFullfilled disabled=true}} Unique? {{#if validation.number.unique.isPending}}checking server....{{/if}}</li>
+</ul>
 
 {{#if validation.number.isFulfilled}}
   Valid
