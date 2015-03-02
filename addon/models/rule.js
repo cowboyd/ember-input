@@ -17,7 +17,11 @@ export var RuleSet = Ember.Object.extend({
     var Rule = Ember.Object.extend({
       form: this.get('form'),
       name: ruleName,
-      result: this.get('definition')[ruleName]
+      result: this.get('definition')[ruleName],
+      isPending: Ember.computed.reads('result.isPending'),
+      isSettled: Ember.computed.reads('result.isSettled'),
+      isRejected: Ember.computed.reads('result.isRejected'),
+      isFulfilled: Ember.computed.reads('result.isFulfilled')
     });
     return Rule.create();
   }),

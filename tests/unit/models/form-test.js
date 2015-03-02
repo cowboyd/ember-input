@@ -301,7 +301,7 @@ describe('Form', function() {
     });
     it("allows access to individual rules on a child property", function() {
       expect(form.get('validation.name.rules.longish.isRejected')).to.equal(true);
-      expect(form.get('validation.name.rules.hasNumber.isRejected')).to.equal(true);
+      expect(form.get('validation.name.rules.hasNumbers.isRejected')).to.equal(true);
     });
     it("has a progress api", function() {
       expect(form.get('validation.progress.ratio')).to.equal(0);

@@ -47,10 +47,15 @@ var Form = Ember.Object.extend(PropertyBindings, {
 
   ruleSet: Ember.computed('rules', function() {
     return RuleSet.for(this, this.get('rules'));
-  }),
+  }).readOnly(),
 
-  validation: Ember.computed('ruleSet', function() {
-    return Validation.create({
+  validation: Ember.computed('ruleSet', '_childKeys', function() {
+    var form = this;
+    var children = this.get('_childKeys').reduce(function(children, key) {
+      children[key] = form.get(key).get('validation');
+      return children;
+    }, {});
+    return Validation.create(children, {
       _ruleSet: this.get('ruleSet')
     });
   }).readOnly(),
@@ -137,7 +142,16 @@ var Validation = Ember.Object.extend({
   isPending: readOnly('_ruleSet.result.isPending'),
   isSettled: readOnly('_ruleSet.result.isSettled'),
   isRejected: readOnly('_ruleSet.result.isRejected'),
-  isFulfilled: readOnly('_ruleSet.result.isFulfilled')
+  isFulfilled: readOnly('_ruleSet.result.isFulfilled'),
+  rules: Ember.computed('_ruleSet', function() {
+    var rules = this.get('_ruleSet.rules');
+    return rules.reduce(function(rollup, rule) {
+      rollup.set(rule.get('name'), rule);
+      return rollup;
+    }, Ember.ArrayProxy.extend({
+      content: rules
+    }).create());
+  })
 });
 
 export default Form;
