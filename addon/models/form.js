@@ -46,10 +46,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
   },
 
   ruleSet: Ember.computed('rules', function() {
-    return RuleSet.create({
-      form: this,
-      definition: this.get('rules')
-    });
+    return RuleSet.for(this, this.get('rules'));
   }),
 
   validation: Ember.computed('ruleSet', function() {

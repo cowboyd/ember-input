@@ -23,3 +23,17 @@ export var RuleSet = Ember.Object.extend({
   }),
   children: Ember.computed.mapBy('form._children', 'ruleSet')
 });
+
+export var EmptyRuleSet = RuleSet.extend({
+  result: Ember.computed('form.scope', function() {
+    return makePromiseObject(RSVP.resolve());
+  })
+});
+
+RuleSet.for = function(form, definition) {
+  if (Ember.isEmpty(Object.keys(definition)) && Ember.isEmpty(form.get('_children'))) {
+    return EmptyRuleSet.create({form: form, definition: definition});
+  } else {
+    return RuleSet.create({form: form, definition: definition});
+  }
+};
