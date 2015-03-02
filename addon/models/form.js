@@ -4,6 +4,7 @@ import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
 import { readOnly } from '../utils/compute';
 import { makePromise } from '../utils/make-promise';
 import { RuleSet } from './rule';
+import Progress from './progress';
 
 var a_slice = [].slice;
 
@@ -168,32 +169,5 @@ var Validation = Ember.Object.extend({
     }).create());
   })
 });
-
-var ProgressGroup = Ember.ArrayProxy.extend({
-  ratio: Ember.computed('length', 'rules.length', function() {
-    return this.get('length') / this.get('rules.length');
-  }),
-  percentage: Ember.computed('ratio', function() {
-    return this.get('ratio') * 100;
-  })
-});
-
-function progressGroupBy(filter) {
-  return Ember.computed('rules', function() {
-    return ProgressGroup.extend({
-      content: Ember.computed.filterBy('rules', filter, true)
-    }).create({
-      rules: this.get('rules')
-    });
-  });
-}
-
-var Progress = Ember.Object.extend({
-  pending: progressGroupBy('isPending'),
-  settled: progressGroupBy('isSettled'),
-  rejected: progressGroupBy('isRejected'),
-  fulfilled: progressGroupBy('isFulfilled')
-});
-
 
 export default Form;
