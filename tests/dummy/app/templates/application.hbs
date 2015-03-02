@@ -1,17 +1,13 @@
 <!-- card validation -->
 <p>Card Number:</p>
 {{input value=form.number}}
-
-<ul> {{input type="checkbox" value=validation.number.isFulfilled}}
-  <li>{{input type="checkbox" value=validation.number.longEnough.isFulfilled disabled=true}} Long Enough?</li>
-  <li>{{input type="checkbox" value=validation.number.unique.isFullfilled disabled=true}} Unique? {{#if validation.number.unique.isPending}}checking server....{{/if}}</li>
+<br/>
+{{input type="checkbox" checked=validation.number.isFulfilled disabled=true}} Valid Card? ({{progress.fulfilled.percentage}}%)
+<ul>
+  <li>{{input type="checkbox" checked=validation.number.rules.isLongEnough.isFulfilled disabled=true}} Long Enough?</li>
+  <li>{{input type="checkbox" checked=validation.number.rules.passesLuhnCheck.isFulfilled disabled=true}} Pass Luhn Check</li>
 </ul>
 
-{{#if validation.number.isFulfilled}}
-  Valid
-{{else}}
-  Invalid
-{{/if}}
 {{form.type}}
 <p>Name:</p>
 {{input value=form.name class="spec-cc-name"}}
@@ -19,4 +15,4 @@
 {{input value=form.expirationDate class="spec-cc-exp"}}
 <p>CCV:</p>
 {{input value=form.ccv class="spec-cc-ccv"}}
-<button class="spec-pay-button" {{bind-attr disabled="validation.isNotFulfilled"}} {{action "submitCard" form}}>Pay!</button>
+<button class="spec-pay-button" {{bind-attr disabled="validation.isFulfilled"}} {{action "submitCard" form}}>Pay!</button>

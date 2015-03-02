@@ -15,8 +15,13 @@ export default Form.extend({
     ].join(' ').trim();
   },
 
-  strippedInput: Ember.computed('source', function() {
-    return this.get('source').replace(/(\s|[^0-9])/g, '');
+  strippedInput: Ember.computed('input', function() {
+    var input = this.get('input');
+    if (!!input) {
+      return input.replace(/(\s|[^0-9])/g, '');
+    } else {
+      return '';
+    }
   }),
 
   rules: {
@@ -44,10 +49,10 @@ export default Form.extend({
         bEven = !bEven;
       }
       return (nCheck % 10) === 0;
-    }),
-    isUnique: Form.rule('strippedInput', function(resolve, reject) {
-      setTimeout(function() {
-      }, 4000);
-    }).onlyIf('isLongEnough')
+    })//,
+    // isUnique: Form.rule('strippedInput', function(resolve, reject) {
+    //   setTimeout(function() {
+    //   }, 4000);
+    // }).onlyIf('isLongEnough')
   }
 });
