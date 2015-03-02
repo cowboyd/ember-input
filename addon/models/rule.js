@@ -1,5 +1,7 @@
 import Ember from 'ember';
-import { RSVP, makePromiseObject } from '../utils/make-promise';
+import { RSVP, makePromise, makePromiseObject } from '../utils/make-promise';
+
+var a_slice = [].slice;
 
 export var RuleSet = Ember.Object.extend({
   form: null,
@@ -46,3 +48,33 @@ RuleSet.for = function(form, definition) {
     return RuleSet.create({form: form, definition: definition});
   }
 };
+
+export function rule(fn) {
+  var args;
+  if (arguments.length > 1) {
+    args = a_slice.call(arguments);
+    fn = args.pop();
+    args = args.map(function(key) {
+      return "form." + key;
+    });
+  }
+
+  args.push(function thunk() {
+    var form = this.get('form');
+    return makePromise(function(resolve, reject) {
+      if (fn.length === 2) {
+        fn.call(form, resolve, reject);
+      } else if (fn.length === 0){
+        if (fn.call(form)) {
+          resolve();
+        } else {
+          reject();
+        }
+      } else {
+        Ember.assert("Form.rule should be called with either 0 or 2 arguments", false);
+      }
+    });
+  });
+
+  return Ember.computed.apply(Ember, args);
+}

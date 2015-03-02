@@ -1,12 +1,9 @@
 import Ember from 'ember';
 import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
-import { makePromise } from '../utils/make-promise';
-import { RuleSet } from './rule';
+import { RuleSet, rule } from './rule';
 import Progress from './progress';
 import Validation from './validation';
-
-var a_slice = [].slice;
 
 var Form = Ember.Object.extend(PropertyBindings, {
   propertyBindings: ['transformedValue > value', 'currentScope > scope', 'scope <> input'],
@@ -109,35 +106,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
   }
 });
 
-Form.rule = function(fn) {
-  var args;
-  if (arguments.length > 1) {
-    args = a_slice.call(arguments);
-    fn = args.pop();
-    args = args.map(function(key) {
-      return "form." + key;
-    });
-  }
-
-  args.push(function thunk() {
-    var form = this.get('form');
-    return makePromise(function(resolve, reject) {
-      if (fn.length === 2) {
-        fn.call(form, resolve, reject);
-      } else if (fn.length === 0){
-        if (fn.call(form)) {
-          resolve();
-        } else {
-          reject();
-        }
-      } else {
-        Ember.assert("Form.rule should be called with either 0 or 2 arguments", false);
-      }
-    });
-  });
-
-  return Ember.computed.apply(Ember, args);
-};
+Form.rule = rule;
 
 Form.hasOne = function(attrs) {
   attrs = attrs || {};
