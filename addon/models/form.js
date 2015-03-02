@@ -111,7 +111,13 @@ Form.rule = rule;
 Form.hasOne = function(attrs) {
   attrs = attrs || {};
   return Ember.computed(function() {
-    return Form.extend(attrs).create({
+    var Child;
+    if (Form.detect(attrs)) {
+      Child = attrs;
+    } else {
+      Child = Form.extend(attrs);
+    }
+    return Child.create({
       _parentForm: this
     });
   }).meta({isForm: true});

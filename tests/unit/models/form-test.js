@@ -335,6 +335,21 @@ describe('Form', function() {
 
   });
 
+  describe("composing form", function() {
+    describe("with classes", function() {
+      beforeEach(function() {
+        var FooForm = Form.extend();
+        form = Form.extend({
+          foo: Form.hasOne(FooForm)
+        }).create();
+        form.set('input.foo', 'bar');
+      });
+      it("works", function() {
+        expect(form.get('foo.value')).to.equal('bar');
+      });
+    });
+  });
+
 
   describe.skip("with a validation that has dependencies", function() {
 
