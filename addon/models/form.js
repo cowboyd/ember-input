@@ -1,10 +1,10 @@
 import Ember from 'ember';
 import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
-import { readOnly } from '../utils/compute';
 import { makePromise } from '../utils/make-promise';
 import { RuleSet } from './rule';
 import Progress from './progress';
+import Validation from './validation';
 
 var a_slice = [].slice;
 
@@ -153,21 +153,5 @@ Form.reads = function(dependentKey) {
     return this.get(dependentKey);
   }).readOnly().meta({isFormRead: true});
 };
-
-var Validation = Ember.Object.extend({
-  isPending: readOnly('_ruleSet.result.isPending'),
-  isSettled: readOnly('_ruleSet.result.isSettled'),
-  isRejected: readOnly('_ruleSet.result.isRejected'),
-  isFulfilled: readOnly('_ruleSet.result.isFulfilled'),
-  rules: Ember.computed('_ruleSet', function() {
-    var rules = this.get('_ruleSet.rules');
-    return rules.reduce(function(rollup, rule) {
-      rollup.set(rule.get('name'), rule);
-      return rollup;
-    }, Ember.ArrayProxy.extend({
-      content: rules
-    }).create());
-  })
-});
 
 export default Form;
