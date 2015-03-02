@@ -60,6 +60,21 @@ var Form = Ember.Object.extend(PropertyBindings, {
     });
   }).readOnly(),
 
+  progress: Ember.computed('ruleSet.all', function() {
+    var form = this;
+    var children = this.get('_childKeys').reduce(function(children, key) {
+      children[key] = form.get(key).get('progress');
+      return children;
+
+    }, {});
+    return Progress.create(children, {
+      rules: this.get('ruleSet.all'),
+      self: Progress.create({
+        rules: this.get('ruleSet.rules')
+      })
+    });
+  }),
+
   __bindChildValues__: Ember.observer(function() {
     var childKeys = [];
     var children = [];
@@ -153,5 +168,32 @@ var Validation = Ember.Object.extend({
     }).create());
   })
 });
+
+var ProgressGroup = Ember.ArrayProxy.extend({
+  ratio: Ember.computed('length', 'rules.length', function() {
+    return this.get('length') / this.get('rules.length');
+  }),
+  percentage: Ember.computed('ratio', function() {
+    return this.get('ratio') * 100;
+  })
+});
+
+function progressGroupBy(filter) {
+  return Ember.computed('rules', function() {
+    return ProgressGroup.extend({
+      content: Ember.computed.filterBy('rules', filter, true)
+    }).create({
+      rules: this.get('rules')
+    });
+  });
+}
+
+var Progress = Ember.Object.extend({
+  pending: progressGroupBy('isPending'),
+  settled: progressGroupBy('isSettled'),
+  rejected: progressGroupBy('isRejected'),
+  fulfilled: progressGroupBy('isFulfilled')
+});
+
 
 export default Form;

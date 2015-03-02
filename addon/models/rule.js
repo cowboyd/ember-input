@@ -25,7 +25,12 @@ export var RuleSet = Ember.Object.extend({
     });
     return Rule.create();
   }),
-  children: Ember.computed.mapBy('form._children', 'ruleSet')
+  children: Ember.computed.mapBy('form._children', 'ruleSet'),
+  all: Ember.computed('children.[]', function() {
+    return this.get('children').reduce(function(rules, child) {
+      return rules.concat(child.get('all'));
+    }, this.get('rules'));
+  })
 });
 
 export var EmptyRuleSet = RuleSet.extend({
