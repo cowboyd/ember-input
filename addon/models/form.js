@@ -6,7 +6,7 @@ import Progress from './progress';
 import Validation from './validation';
 
 var Form = Ember.Object.extend(PropertyBindings, {
-  propertyBindings: ['transformedValue > value', 'currentScope > scope', 'scope <> input'],
+  propertyBindings: ['transformedValue > value', 'currentScope > scope', 'scope <> input', 'formattedInput > input'],
 
   rules: {},
   currentScope: Ember.computed('value', '_parentForm.currentScope', function() {
@@ -26,6 +26,17 @@ var Form = Ember.Object.extend(PropertyBindings, {
     }
   }).readOnly(),
 
+  format: function(input) {
+    return input;
+  },
+
+  formattedInput: Ember.computed('input', function() {
+    if (this.get('isAtom')) {
+      return this.format(this.get('input'));
+    } else {
+      return this.get('input');
+    }
+  }),
 
   serialize: function(value) {
     if (this.get('isAtom')) {

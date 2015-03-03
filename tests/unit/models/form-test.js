@@ -97,11 +97,43 @@ describe('Form', function() {
       beforeEach(function() {
         form.set('value', 6);
       });
-      it("updates the formatted value", function() {
+      it("updates the value", function() {
         expect(form.get('input')).to.equal(6);
       });
     });
   });
+
+  describe("with custom formatting that puts parentheses around something", function() {
+    beforeEach(function() {
+      form = Form.extend({
+        input: "",
+        format: function(input) {
+          input = input || "";
+          input = input.replace("(","").replace(")","");
+          if (Ember.isEmpty(input)) {
+            return "";
+          } else {
+            return "(" + input + ")";
+          }
+        }
+      }).create();
+      form.set('input', 'ohai');
+    });
+    it("applies to the input", function() {
+      expect(form.get('input')).to.equal('(ohai)');
+    });
+    describe("removing all the input", function() {
+      beforeEach(function() {
+        form.set('input', '()');
+      });
+      it("removes the string altogether", function() {
+        expect(form.get('input')).to.equal("");
+      });
+
+    });
+
+  });
+
 
   describe("with no validations at all", function() {
     beforeEach(function() {
