@@ -314,8 +314,8 @@ describe('Form', function() {
           }
         }),
         rules: {
-          hasName: Form.rule('scope.name', function() {
-            return !Ember.isEmpty(this.get('scope.name'));
+          hasName: Form.rule('name.value', function() {
+            return !Ember.isEmpty(this.get('name.value'));
           })
         }
       }).create();
