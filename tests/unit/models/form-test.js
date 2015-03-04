@@ -366,6 +366,9 @@ describe('Form', function() {
     it("is invalid at the top level", function() {
       expect(form.get('validation.isRejected')).to.equal(true);
     });
+    it("has a helper to see if a form should be disabled", function() {
+      expect(form.get('validation.isNotFulfilled')).to.equal(true);
+    });
     it("allows access to the specific rule", function() {
       expect(form.get('validation.rules.hasName.isRejected')).to.equal(true);
       expect(form.get('validation.rules.firstObject.isRejected')).to.equal(true);

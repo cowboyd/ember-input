@@ -21,4 +21,4 @@
 {{input value=form.expirationDate class="spec-cc-exp"}}
 <p>CCV:</p>
 {{input value=form.ccv class="spec-cc-ccv"}}
-<button class="spec-pay-button" {{bind-attr disabled="validation.isFulfilled"}} {{action "submitCard" form}}>Pay!</button>
+<button class="spec-pay-button" {{bind-attr disabled="validation.isNotFulfilled"}} {{action "submitCard" form}}>Pay!</button>

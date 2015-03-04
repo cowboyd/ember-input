@@ -24,7 +24,8 @@ export var RuleSet = Ember.Object.extend({
       isPending: Ember.computed.reads('result.isPending'),
       isSettled: Ember.computed.reads('result.isSettled'),
       isRejected: Ember.computed.reads('result.isRejected'),
-      isFulfilled: Ember.computed.reads('result.isFulfilled')
+      isFulfilled: Ember.computed.reads('result.isFulfilled'),
+      isNotFulfilled: Ember.computed.not('isFulfilled')
     });
     return Rule.create();
   }),
