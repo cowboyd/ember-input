@@ -25,6 +25,31 @@ describe('Form', function() {
     });
   });
 
+  describe("default template context on a complex form", function() {
+    beforeEach(function() {
+      form = Form.extend({
+        firstName: Form.hasOne(),
+        lastName: Form.hasOne()
+      }).create();
+      this.value = {
+        firstName: 'Charles',
+        lastName: 'Lowell'
+      };
+      form.set('value', this.value);
+    });
+
+    it("is not the same as the value ", function() {
+      expect(form.get('scope')).not.to.equal(this.value);
+    });
+
+    it("populates the form context with the values from the object", function() {
+      expect(form.get('scope.firstName')).to.equal('Charles');
+      console.log("form.get('scope.firstName') = ", form.get('scope.firstName'));
+      expect(form.get('scope.lastName')).to.equal('Lowell');
+    });
+  });
+
+
   describe("with no customization", function() {
     beforeEach(function() {
       form = Form.create();
