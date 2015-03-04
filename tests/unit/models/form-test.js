@@ -103,7 +103,7 @@ describe('Form', function() {
     });
   });
 
-  describe("with custom formatting that puts parentheses around something", function() {
+  describe.skip("with custom formatting that puts parentheses around something", function() {
     beforeEach(function() {
       form = Form.extend({
         input: "",

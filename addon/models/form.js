@@ -1,17 +1,34 @@
 import Ember from 'ember';
 import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
-import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
 import { RuleSet, rule } from './rule';
 import Progress from './progress';
 import Validation from './validation';
 
 var Form = Ember.Object.extend(PropertyBindings, {
-  propertyBindings: ['transformedValue > value', 'currentScope > scope', 'scope <> input', 'formattedInput > input'],
+  propertyBindings: ['transformedValue > value', 'currentScope > scope', 'scope <> input'],
 
   rules: {},
+
   currentScope: Ember.computed('value', '_parentForm.currentScope', function() {
-    return this.serialize(this.get('value'));
+    var value = this.get('value');
+    if (this.get('isAtom')) {
+      return this.serialize(value);
+    } else {
+      var aliases = this.get('_childKeys').reduce(function(aliases, key) {
+        aliases[key] = Ember.computed.alias('_form.' + key + '.value');
+        return aliases;
+      }, {});
+      var reads = this.get('_readKeys').reduce(function(reads, key) {
+        reads[key] = Ember.computed.reads("_form." + key);
+        return reads;
+      }, {});
+      var Scope = Ember.Object.extend(aliases, reads, {
+        _form: this
+      });
+      return Scope.create(this.serialize(value || {}));
+    }
   }),
+
   isAtom: Ember.computed.equal('_children.length', 0),
 
   transform: function(input) {
@@ -39,19 +56,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
   }),
 
   serialize: function(value) {
-    if (this.get('isAtom')) {
-      return value;
-    } else {
-      var form = this;
-      var attrs = this.get('_childKeys').reduce(function(current, key) {
-        current[key] = form.get(key).get('value');
-        return current;
-      }, {});
-      this.get('_readKeys').reduce(function(current, key) {
-        current[key] = form.get(key);
-      }, attrs);
-      return Ember.Object.create(attrs);
-    }
+    return value;
   },
 
   ruleSet: Ember.computed('rules', function() {
@@ -84,7 +89,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
     });
   }),
 
-  __bindChildValues__: Ember.observer(function() {
+  __collectMetadata__: Ember.observer(function() {
     var childKeys = [];
     var children = [];
     var readKeys = [];
@@ -99,14 +104,6 @@ var Form = Ember.Object.extend(PropertyBindings, {
     this.set('_children', Ember.A(children));
     this.set('_childKeys', Ember.A(childKeys));
     this.set('_readKeys', Ember.A(readKeys));
-    if (childKeys.length > 0) {
-      childKeys.forEach(function(key) {
-        bindProperties(this, key + ".currentScope", "currentScope." + key);
-      }, this);
-      readKeys.forEach(function(key) {
-        bindProperties(this, key, "currentScope." + key, true).toString();
-      }, this);
-    }
   }).on('init'),
 
   willDestroy: function() {
