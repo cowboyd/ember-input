@@ -5,7 +5,7 @@ import Progress from './progress';
 import Validation from './validation';
 
 var Form = Ember.Object.extend(PropertyBindings, {
-  propertyBindings: ['transformedValue > value', 'currentScope > scope', 'scope <> input'],
+  propertyBindings: ['transformedValue > value', 'unformattedInput > scope', 'currentScope > scope', 'formattedInput > input'],
 
   rules: {},
 
@@ -15,7 +15,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
       return this.serialize(value);
     } else {
       var aliases = this.get('_childKeys').reduce(function(aliases, key) {
-        aliases[key] = Ember.computed.alias('_form.' + key + '.value');
+        aliases[key] = Ember.computed.alias('_form.' + key + '.input');
         return aliases;
       }, {});
       var reads = this.get('_readKeys').reduce(function(reads, key) {
@@ -43,16 +43,20 @@ var Form = Ember.Object.extend(PropertyBindings, {
     }
   }).readOnly(),
 
-  format: function(input) {
-    return input;
+  format: function(unformatted) {
+    return unformatted;
   },
 
-  formattedInput: Ember.computed('input', function() {
-    if (this.get('isAtom')) {
-      return this.format(this.get('input'));
-    } else {
-      return this.get('input');
-    }
+  unformat: function(formatted) {
+    return formatted;
+  },
+
+  formattedInput: Ember.computed('scope', function() {
+    return this.format(this.get('scope'));
+  }),
+
+  unformattedInput: Ember.computed('input', function() {
+    return this.unformat(this.get('input'));
   }),
 
   serialize: function(value) {

@@ -2,34 +2,31 @@ import Ember from 'ember';
 import Form from 'ember-input';
 
 export default Form.extend({
-  transform: function() {
-    return this.get('strippedInput');
-  },
-  format: function() {
-    var input = this.get('strippedInput');
+
+  format: function(formatted) {
+    formatted = formatted || '';
     return [
-      input.substring(0,4),
-      input.substring(4,8),
-      input.substring(8,12),
-      input.substring(12,16)
+      formatted.substring(0,4),
+      formatted.substring(4,8),
+      formatted.substring(8,12),
+      formatted.substring(12,16)
     ].join(' ').trim();
   },
 
-  strippedInput: Ember.computed('input', function() {
-    var input = this.get('input');
-    if (!!input) {
-      return input.replace(/(\s|[^0-9])/g, '');
+  unformat: function(formatted) {
+    if (!!formatted) {
+      return formatted.replace(/(\s|[^0-9])/g, '');
     } else {
       return '';
     }
-  }),
+  },
 
   rules: {
-    isLongEnough: Form.rule('strippedInput.length', function() {
-      return this.get('strippedInput.length') === 16;
+    isLongEnough: Form.rule('scope.length', function() {
+      return this.get('scope.length') === 16;
     }),
-    passesLuhnCheck: Form.rule('strippedInput', function() {
-      var value = this.get('strippedInput');
+    passesLuhnCheck: Form.rule('scope', function() {
+      var value = this.get('scope');
       // accept only digits, dashes or spaces
       if (/[^0-9-\s]+/.test(value)) {return false;}
 
@@ -49,10 +46,6 @@ export default Form.extend({
         bEven = !bEven;
       }
       return (nCheck % 10) === 0;
-    })//,
-    // isUnique: Form.rule('strippedInput', function(resolve, reject) {
-    //   setTimeout(function() {
-    //   }, 4000);
-    // }).onlyIf('isLongEnough')
+    })
   }
 });

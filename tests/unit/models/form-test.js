@@ -103,7 +103,7 @@ describe('Form', function() {
     });
   });
 
-  describe.skip("with custom formatting that puts parentheses around something", function() {
+  describe("with custom formatting that puts parentheses around something", function() {
     beforeEach(function() {
       form = Form.extend({
         input: "",
@@ -309,7 +309,7 @@ describe('Form', function() {
               return this.get('input.length') > 5;
             }),
             hasNumbers: Form.rule('input', function() {
-              return /\d/.test(this.get('input'));
+              return /\d/.test(this.get('scope'));
             })
           }
         }),
@@ -343,25 +343,24 @@ describe('Form', function() {
     });
     describe("entering in some valid (although not fully valid input)", function() {
       beforeEach(function() {
-        form.set('scope.name', 'C3P0');
+        form.set('name.input', 'C3P0');
       });
       it("is still rejected", function() {
         expect(form.get('validation.isRejected')).to.equal(true);
       });
       it("updates the progress", function() {
-        expect(form.get('validation.rules.hasName.isFulfilled')).to.equal(true);
-        expect(Math.round(form.get('progress.fulfilled.ratio') * 100) / 100).to.equal(0.67);
-        expect(Math.round(form.get('progress.rejected.ratio') * 100) / 100).to.equal(0.33);
-        expect(Math.round(form.get('progress.rejected.percentage'))).to.equal(33);
-        expect(Math.round(form.get('progress.fulfilled.percentage'))).to.equal(67);
-        expect(form.get('progress.self.fulfilled.ratio')).to.equal(1);
-        expect(form.get('progress.self.fulfilled.percentage')).to.equal(100);
-        expect(form.get('progress.self.rejected.ratio')).to.equal(0);
-        expect(form.get('progress.self.rejected.percentage')).to.equal(0);
+        expect(Math.round(form.get('progress.fulfilled.ratio') * 100) / 100).to.equal(0.33);
+        expect(Math.round(form.get('progress.rejected.ratio') * 100) / 100).to.equal(0.67);
+        expect(Math.round(form.get('progress.rejected.percentage'))).to.equal(67);
+        expect(Math.round(form.get('progress.fulfilled.percentage'))).to.equal(33);
+        expect(form.get('progress.self.fulfilled.ratio')).to.equal(0);
+        expect(form.get('progress.self.fulfilled.percentage')).to.equal(0);
+        expect(form.get('progress.self.rejected.ratio')).to.equal(1);
+        expect(form.get('progress.self.rejected.percentage')).to.equal(100);
         expect(form.get('progress.name.fulfilled.ratio')).to.equal(0.5);
       });
       it("can access invididual rules as a list", function() {
-        expect(form.get('validation.rules.firstObject.isFulfilled')).to.equal(true);
+        expect(form.get('validation.rules.firstObject.isRejected')).to.equal(true);
       });
     });
 
