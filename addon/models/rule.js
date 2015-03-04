@@ -18,6 +18,7 @@ export var RuleSet = Ember.Object.extend({
   rules: Ember.computed.map('ruleNames', function(ruleName) {
     var Rule = Ember.Object.extend({
       form: this.get('form'),
+      ruleset: this,
       name: ruleName,
       result: this.get('definition')[ruleName],
       isPending: Ember.computed.reads('result.isPending'),
@@ -26,6 +27,12 @@ export var RuleSet = Ember.Object.extend({
       isFulfilled: Ember.computed.reads('result.isFulfilled')
     });
     return Rule.create();
+  }),
+  rulesByName: Ember.computed('rules.[]', function() {
+    return this.get('rules').reduce(function(object, rule) {
+      object.set(rule.get('name'), rule);
+      return object;
+    }, Ember.Object.create());
   }),
   children: Ember.computed.mapBy('form._children', 'ruleSet'),
   all: Ember.computed('children.[]', function() {
@@ -59,22 +66,41 @@ export function rule(fn) {
     });
   }
 
+
   args.push(function thunk() {
     var form = this.get('form');
-    return makePromise(function(resolve, reject) {
-      if (fn.length === 2) {
-        fn.call(form, resolve, reject);
-      } else if (fn.length === 0){
-        if (fn.call(form)) {
-          resolve();
+    var isFulfilled = function(key) {
+      return this.get(key);
+    };
+
+    if (dependentRuleNames.every(isFulfilled, this)) {
+      return makePromise(function(resolve, reject) {
+        if (fn.length === 2) {
+          fn.call(form, resolve, reject);
+        } else if (fn.length === 0){
+          if (fn.call(form)) {
+            resolve();
+          } else {
+            reject();
+          }
         } else {
-          reject();
+          Ember.assert("Form.rule should be called with either 0 or 2 arguments", false);
         }
-      } else {
-        Ember.assert("Form.rule should be called with either 0 or 2 arguments", false);
-      }
-    });
+      });
+    } else {
+      return makePromiseObject(RSVP.reject());
+    }
   });
 
-  return Ember.computed.apply(Ember, args);
+  var dependentRuleNames = [];
+  var property = Ember.computed.apply(Ember, args);
+  property.when = function() {
+    a_slice.call(arguments).forEach(function(key) {
+      var ruleKey = 'ruleset.rulesByName.' + key + '.isFulfilled';
+      dependentRuleNames.push(ruleKey);
+      this.property(ruleKey);
+    }, this);
+    return property;
+  };
+  return property;
 }

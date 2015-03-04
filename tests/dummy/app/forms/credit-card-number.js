@@ -46,6 +46,9 @@ export default Form.extend({
         bEven = !bEven;
       }
       return (nCheck % 10) === 0;
-    })
+    }).when('isLongEnough'),
+    isUnique: Form.rule('scope', function(resolve, reject) {
+      setTimeout(resolve, 2000);
+    }).when('isLongEnough', 'passesLuhnCheck')
   }
 });

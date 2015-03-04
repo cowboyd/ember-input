@@ -222,6 +222,48 @@ describe('Form', function() {
     });
   });
 
+  describe("with dependant validations", function() {
+    beforeEach(function() {
+      form = Form.extend({
+        rules: {
+          first: Form.rule('input', function() {
+            return this.get('input.length') > 2;
+          }),
+          second: Form.rule('input', function() {
+            return /\d/.test(this.get('input'));
+          }),
+          third: Form.rule('input', function() {
+            return /W$/.test(this.get('input'));
+          }).when('first', 'second')
+        }
+      }).create();
+      form.set('input', 'xyz');
+    });
+    it("runs the first two validations, but not the third", function() {
+      expect(form.get('validation.rules.first.isFulfilled')).to.equal(true);
+      expect(form.get('validation.rules.second.isRejected')).to.equal(true);
+      expect(form.get('validation.rules.third.isRejected')).to.equal(true);
+    });
+
+    describe("making the second validation pass", function() {
+      beforeEach(function() {
+        form.set('input', 'xyz1');
+      });
+      it("runs all three validations, failing the third", function() {
+        expect(form.get('validation.rules.third.isRejected')).to.equal(true);
+      });
+      describe("failing the first", function() {
+        beforeEach(function() {
+          form.set('input', '1');
+        });
+        it("sets the third back to rejected", function() {
+          expect(form.get('validation.rules.third.isRejected')).to.equal(true);
+        });
+      });
+    });
+  });
+
+
   describe("with multiple atomic fields", function() {
     beforeEach(function() {
       form = Form.extend({

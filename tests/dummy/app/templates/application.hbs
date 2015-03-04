@@ -6,6 +6,12 @@
 <ul>
   <li>{{input type="checkbox" checked=validation.number.rules.isLongEnough.isFulfilled disabled=true}} Long Enough?</li>
   <li>{{input type="checkbox" checked=validation.number.rules.passesLuhnCheck.isFulfilled disabled=true}} Pass Luhn Check</li>
+  <li>
+    {{input type="checkbox" checked=validation.number.rules.isUnique.isFulfilled disabled=true}} Is Unique?
+    {{#if validation.number.rules.isUnique.isPending}}
+      (checking server....)
+    {{/if}}
+  </li>
 </ul>
 
 {{form.type}}
