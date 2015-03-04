@@ -21,7 +21,7 @@ describe('Form', function() {
       form.set('input', '');
     });
     it("has an empty string for a input", function() {
-      expect(form.get('scope')).to.equal('');
+      expect(form.get('value')).to.equal('');
     });
   });
 
