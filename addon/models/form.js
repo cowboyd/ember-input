@@ -9,7 +9,7 @@ var Form = Ember.Object.extend(PropertyBindings, {
 
   rules: {},
 
-  currentScope: Ember.computed('value', '_parentForm.currentScope', function() {
+  currentScope: Ember.computed('value', function() {
     var value = this.get('value');
     if (this.get('isAtom')) {
       return this.serialize(value);
@@ -26,6 +26,14 @@ var Form = Ember.Object.extend(PropertyBindings, {
         _form: this
       });
       return Scope.create(this.serialize(value || {}));
+    }
+  }),
+
+  cascade: Ember.observer('_parentForm.currentScope', function() {
+    var parent = this.get('_parentForm.currentScope');
+    if (!!parent) {
+      var newScope = parent.get(this.get('_fieldName'));
+      this.set('scope', this.unformat(newScope));
     }
   }),
 
@@ -93,22 +101,32 @@ var Form = Ember.Object.extend(PropertyBindings, {
     });
   }),
 
-  __collectMetadata__: Ember.observer(function() {
-    var childKeys = [];
-    var children = [];
-    var readKeys = [];
+  _fields: Ember.computed(function() {
+    var fields = [];
     this.constructor.eachComputedProperty(function(name, meta) {
       if (meta.isForm) {
-        childKeys.push(name);
-        children.push(this.get(name));
-      } else if (meta.isFormRead) {
+        meta.name = name;
+        fields.push(meta);
+      }
+    }, this);
+    return fields;
+  }),
+
+  _readKeys: Ember.computed(function() {
+    var readKeys = [];
+    this.constructor.eachComputedProperty(function(name, meta) {
+      if (meta.isFormRead) {
         readKeys.push(name);
       }
     }, this);
-    this.set('_children', Ember.A(children));
-    this.set('_childKeys', Ember.A(childKeys));
-    this.set('_readKeys', Ember.A(readKeys));
-  }).on('init'),
+    return readKeys;
+  }),
+
+  _childKeys: Ember.computed.mapBy('_fields', 'name'),
+
+  _children: Ember.computed.map('_childKeys', function(key) {
+    return this.get(key);
+  }),
 
   willDestroy: function() {
     this.get('_children').forEach(function(child) {
@@ -122,17 +140,19 @@ Form.rule = rule;
 
 Form.hasOne = function(attrs) {
   attrs = attrs || {};
-  return Ember.computed(function() {
-    var Child;
-    if (Form.detect(attrs)) {
-      Child = attrs;
-    } else {
-      Child = Form.extend(attrs);
-    }
-    return Child.create({
-      _parentForm: this
+  var Type;
+  if (Form.detect(attrs)) {
+    Type = attrs;
+  } else {
+    Type = Form.extend(attrs);
+  }
+  var property = Ember.computed(function() {
+    return Type.create({
+      _parentForm: this,
+      _fieldName: property.meta().name
     });
-  }).meta({isForm: true});
+  }).meta({isForm: true, type: Type});
+  return property;
 };
 
 Form.reads = function(dependentKey) {
