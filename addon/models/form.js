@@ -139,19 +139,21 @@ var Form = Ember.Object.extend(PropertyBindings, {
 Form.rule = rule;
 
 Form.hasOne = function(attrs) {
-  attrs = attrs || {};
-  var Type;
-  if (Form.detect(attrs)) {
-    Type = attrs;
-  } else {
-    Type = Form.extend(attrs);
-  }
   var property = Ember.computed(function() {
+    attrs = attrs || {};
+    var Type;
+    if (typeof attrs === 'string') {
+      Type = this.container.lookupFactory('form:' + attrs);
+    } else if (Form.detect(attrs)) {
+      Type = attrs;
+    } else {
+      Type = Form.extend(attrs);
+    }
     return Type.create({
       _parentForm: this,
       _fieldName: property.meta().name
     });
-  }).meta({isForm: true, type: Type});
+  }).meta({isForm: true});
   return property;
 };
 
