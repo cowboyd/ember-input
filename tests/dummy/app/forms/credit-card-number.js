@@ -3,13 +3,13 @@ import Form from 'ember-input';
 
 export default Form.extend({
 
-  format: function(formatted) {
-    formatted = formatted || '';
+  format: function(unformatted) {
+    unformatted = unformatted || '';
     return [
-      formatted.substring(0,4),
-      formatted.substring(4,8),
-      formatted.substring(8,12),
-      formatted.substring(12,16)
+      unformatted.substring(0,4),
+      unformatted.substring(4,8),
+      unformatted.substring(8,12),
+      unformatted.substring(12,16)
     ].join(' ').trim();
   },
 

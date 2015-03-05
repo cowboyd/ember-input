@@ -2,7 +2,7 @@ import Ember from 'ember';
 import Form from 'ember-input/models/form';
 
 export default Ember.Component.extend({
-  propertyBindings: ['value > form.value'],
+  propertyBindings: ['value > _formObject.value'],
   tagName: 'form',
 
   _formObject: Ember.computed('type', function() {

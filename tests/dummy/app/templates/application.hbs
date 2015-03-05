@@ -1,6 +1,6 @@
 <!-- card validation -->
-<p>Card Number:</p>
-{{#x-form model=model type="credit-card" as |form validation progress|}}
+<p>Card Number: {{model.number}}</p>
+{{#x-form value=model type="credit-card" as |form validation progress|}}
   {{input value=form.number}}
   <br/>
   {{input type="checkbox" checked=validation.number.isFulfilled disabled=true}} Valid Card? ({{progress.fulfilled.percentage}}%)
