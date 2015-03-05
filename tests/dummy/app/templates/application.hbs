@@ -1,24 +1,26 @@
 <!-- card validation -->
 <p>Card Number:</p>
-{{input value=form.number}}
-<br/>
-{{input type="checkbox" checked=validation.number.isFulfilled disabled=true}} Valid Card? ({{progress.fulfilled.percentage}}%)
-<ul>
-  <li>{{input type="checkbox" checked=validation.number.rules.isLongEnough.isFulfilled disabled=true}} Long Enough?</li>
-  <li>{{input type="checkbox" checked=validation.number.rules.passesLuhnCheck.isFulfilled disabled=true}} Pass Luhn Check</li>
-  <li>
-    {{input type="checkbox" checked=validation.number.rules.isUnique.isFulfilled disabled=true}} Is Unique?
-    {{#if validation.number.rules.isUnique.isPending}}
-      (checking server....)
-    {{/if}}
-  </li>
-</ul>
+{{#x-form model=model type="credit-card" as |form validation progress|}}
+  {{input value=form.number}}
+  <br/>
+  {{input type="checkbox" checked=validation.number.isFulfilled disabled=true}} Valid Card? ({{progress.fulfilled.percentage}}%)
+  <ul>
+    <li>{{input type="checkbox" checked=validation.number.rules.isLongEnough.isFulfilled disabled=true}} Long Enough?</li>
+    <li>{{input type="checkbox" checked=validation.number.rules.passesLuhnCheck.isFulfilled disabled=true}} Pass Luhn Check</li>
+    <li>
+      {{input type="checkbox" checked=validation.number.rules.isUnique.isFulfilled disabled=true}} Is Unique?
+      {{#if validation.number.rules.isUnique.isPending}}
+        (checking server....)
+      {{/if}}
+    </li>
+  </ul>
 
-{{form.type}}
-<p>Name:</p>
-{{input value=form.name class="spec-cc-name"}}
-<p>Expiration:</p>
-{{input value=form.expirationDate class="spec-cc-exp"}}
-<p>CCV:</p>
-{{input value=form.ccv class="spec-cc-ccv"}}
-<button class="spec-pay-button" {{bind-attr disabled="validation.isNotFulfilled"}} {{action "submitCard" form}}>Pay!</button>
+  {{form.type}}
+  <p>Name:</p>
+  {{input value=form.name class="spec-cc-name"}}
+  <p>Expiration:</p>
+  {{input value=form.expirationDate class="spec-cc-exp"}}
+  <p>CCV:</p>
+  {{input value=form.ccv class="spec-cc-ccv"}}
+  <button class="spec-pay-button" {{bind-attr disabled="validation.isNotFulfilled"}} {{action "submitCard" form}}>Pay!</button>
+{{/x-form}}

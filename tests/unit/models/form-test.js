@@ -3,6 +3,8 @@ import { describe, it, beforeEach, afterEach, sinon } from '../../test-helper';
 import Ember from 'ember';
 import Form from 'ember-input';
 
+var expect = window.expect;
+
 describe('Form', function() {
   var form;
   afterEach(function() {
