@@ -44,8 +44,8 @@ describe('Form', function() {
   describe("with multiple atomic fields", function() {
     beforeEach(function() {
       form = Form.extend({
-        number: Form.hasOne({
-          transform: function(input) {
+        number: Form.field({
+          unformat: function(input) {
             return parseInt(input);
           },
           rules: {
@@ -54,7 +54,7 @@ describe('Form', function() {
             })
           }
         }),
-        string: Form.hasOne()
+        string: Form.field()
       }).create();
       form.set('number.input', '5');
       form.set('string.input', 'hello');
@@ -92,7 +92,7 @@ describe('Form', function() {
       form = Form.extend({
         type: Form.reads('name.type'),
 
-        name: Form.hasOne({
+        name: Form.field({
           input: '',
           type: Ember.computed('input', function() {
             if (this.get('input.length') > 15) {
@@ -122,7 +122,7 @@ describe('Form', function() {
   describe("validation context", function() {
     beforeEach(function() {
       form = Form.extend({
-        name: Form.hasOne({
+        name: Form.field({
           rules: {
             longish: Form.rule('input', function() {
               return this.get('input.length') > 5;
