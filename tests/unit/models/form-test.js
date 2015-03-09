@@ -6,7 +6,7 @@ import Field from 'ember-input/models/field';
 
 var expect = window.expect;
 
-describe('Form', function() {
+describe.only('Form', function() {
   var form;
   afterEach(function() {
     if (!!form) {
@@ -32,12 +32,12 @@ describe('Form', function() {
     });
 
     it("is not the same as the value ", function() {
-      expect(form.get('scope')).not.to.equal(this.value);
+      expect(form.get('templateContext')).not.to.equal(this.value);
     });
 
     it("populates the form context with the values from the object", function() {
-      expect(form.get('scope.firstName')).to.equal('Charles');
-      expect(form.get('scope.lastName')).to.equal('Lowell');
+      expect(form.get('templateContext.firstName')).to.equal('Charles');
+      expect(form.get('templateContext.lastName')).to.equal('Lowell');
     });
   });
 
@@ -61,8 +61,8 @@ describe('Form', function() {
     });
 
     it("has a input which is a rollup of the fields", function() {
-      expect(form.get('input.number')).to.equal(5);
-      expect(form.get('input.string')).to.equal('hello');
+      expect(form.get('templateContext.number')).to.equal(5);
+      expect(form.get('templateContext.string')).to.equal('hello');
     });
     describe("changing one of the subfields", function() {
       beforeEach(function() {
@@ -70,13 +70,14 @@ describe('Form', function() {
         form.set('number.input', '10');
       });
       it("updates the rollup", function() {
-        expect(form.get('input.number')).to.equal(10);
-        expect(form.get('input.string')).to.equal('goodbye');
+        expect(form.get('templateContext.number')).to.equal(10);
+        expect(form.get('templateContext.string')).to.equal('goodbye');
       });
     });
     describe("with an invalid subfield", function() {
       beforeEach(function() {
-        form.set('scope.number', 'five');
+        form.set('templateContext.number', 'five');
+        form.get('validation.isFulfilled');
       });
 
       it("is not valid", function() {
@@ -106,7 +107,7 @@ describe('Form', function() {
     });
 
     it("is visible on the input", function() {
-      expect(form.get('scope.type')).to.equal('short');
+      expect(form.get('templateContext.type')).to.equal('short');
     });
 
     describe("updating the child input", function() {
@@ -114,7 +115,7 @@ describe('Form', function() {
         form.set('name.input', 'Phineas T. Barnstone');
       });
       it("updates the inputs model", function() {
-        expect(form.get('input.type')).to.equal('long');
+        expect(form.get('templateContext.type')).to.equal('long');
       });
     });
   });
@@ -138,6 +139,7 @@ describe('Form', function() {
           })
         }
       }).create();
+      form.get('validation.isFulfilled');
     });
 
     it("is invalid at the top level", function() {
@@ -166,6 +168,7 @@ describe('Form', function() {
     describe("entering in some valid (although not fully valid input)", function() {
       beforeEach(function() {
         form.set('name.input', 'C3P0');
+        form.get('validation.isFulfilled');
       });
       it("is still rejected", function() {
         expect(form.get('validation.isRejected')).to.equal(true);
@@ -191,11 +194,11 @@ describe('Form', function() {
   describe("composing form", function() {
     describe("with classes", function() {
       beforeEach(function() {
-        var FooForm = Form.extend();
+        var FooField = Field.extend();
         form = Form.extend({
-          foo: Form.hasOne(FooForm)
+          foo: Form.field(FooField)
         }).create();
-        form.set('input.foo', 'bar');
+        form.set('templateContext.foo', 'bar');
       });
       it("works", function() {
         expect(form.get('foo.value')).to.equal('bar');
