@@ -6,7 +6,7 @@ import { rule } from 'ember-input/models/rule';
 
 var expect = window.expect;
 
-describe.only('Field', function() {
+describe('Field', function() {
   var field;
   describe('default states', function() {
     beforeEach(function() {
@@ -62,6 +62,34 @@ describe.only('Field', function() {
       });
       it("switches to that value", function() {
         expect(field.get('value')).to.equal(10);
+      });
+    });
+  });
+  describe("with custom formatting that puts parentheses around something", function() {
+    beforeEach(function() {
+      field = Field.extend({
+        input: "",
+        format: function(input) {
+          input = input || "";
+          input = input.replace("(","").replace(")","");
+          if (Ember.isEmpty(input)) {
+            return "";
+          } else {
+            return "(" + input + ")";
+          }
+        }
+      }).create();
+      field.set('input', 'ohai');
+    });
+    it("applies to the input", function() {
+      expect(field.get('input')).to.equal('(ohai)');
+    });
+    describe("removing all the input", function() {
+      beforeEach(function() {
+        field.set('input', '()');
+      });
+      it("removes the string altogether", function() {
+        expect(field.get('input')).to.equal("");
       });
     });
   });
