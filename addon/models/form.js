@@ -9,8 +9,8 @@ var Form = Ember.Object.extend(PropertyBindings, Validatable, {
 
   templateContext: Ember.computed('value', function() {
     var value = this.get('value');
-    var aliases = this.get('_childKeys').reduce(function(aliases, key) {
-      aliases[key] = Ember.computed.alias('_form.' + key + '.input');
+    var aliases = this.get('_fields').reduce(function(aliases, field) {
+      aliases[field.name] = Ember.computed.alias('_form.' + field.name + '.input');
       return aliases;
     }, {});
     var reads = this.get('_readKeys').reduce(function(reads, key) {
@@ -47,8 +47,6 @@ var Form = Ember.Object.extend(PropertyBindings, Validatable, {
     }, this);
     return readKeys;
   }),
-
-  _childKeys: Ember.computed.mapBy('_fields', 'name'),
 
   children: Ember.computed.map('_fields', function(desc) {
     return this.get(desc.name);
