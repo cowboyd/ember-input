@@ -18,16 +18,6 @@ describe('Form', function() {
     return form.get('validation.isFulfilled');
   }
 
-  describe('default states', function() {
-    beforeEach(function() {
-      form = Form.create();
-      form.set('input', '');
-    });
-    it("has an empty string for a input", function() {
-      expect(form.get('value')).to.equal('');
-    });
-  });
-
   describe("default template context on a complex form", function() {
     beforeEach(function() {
       form = Form.extend({
@@ -49,58 +39,6 @@ describe('Form', function() {
       expect(form.get('scope.firstName')).to.equal('Charles');
       console.log("form.get('scope.firstName') = ", form.get('scope.firstName'));
       expect(form.get('scope.lastName')).to.equal('Lowell');
-    });
-  });
-
-
-  describe("with no customization", function() {
-    beforeEach(function() {
-      form = Form.create();
-      form.set('input', 'foo');
-    });
-    it("has the same value as the input", function() {
-      expect(form.get('value')).to.equal('foo');
-    });
-  });
-
-  describe.only("with an unformatting", function() {
-    beforeEach(function() {
-      form = Field.create({
-        unformat: function(input) {
-          return parseInt(input);
-        },
-        rules: {
-          anInteger: Form.rule('input', function() {
-            // console.log("this.get('input') = ", this.get('input'));
-            // console.log("!isNaN(parseInt(this.get('input')) = ", !isNaN(parseInt(this.get('input'))));
-            return !isNaN(parseInt(this.get('input')));
-          })
-        }
-      });
-      form.set('input', '5');
-    });
-    it("is valid", function() {
-      expect(form.get('validation.isFulfilled')).to.equal(true);
-    });
-
-    it('derives the value from the transform function', function() {
-      expect(form.get('value')).to.equal(5);
-    });
-    describe("if the input is set to an invalid value", function() {
-      beforeEach(function() {
-        form.set('input', 'five');
-      });
-      it("keeps the same value", function() {
-        expect(form.get('value')).to.equal(5);
-      });
-    });
-    describe("if the input is set to another valid value", function() {
-      beforeEach(function() {
-        form.set('input', '10');
-      });
-      it("switches to that value", function() {
-        expect(form.get('value')).to.equal(10);
-      });
     });
   });
 
