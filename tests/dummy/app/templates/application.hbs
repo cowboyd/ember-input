@@ -1,26 +1,21 @@
 <!-- card validation -->
-<p>Card Number: {{model.number}}</p>
-{{#x-form value=model type="credit-card" as |form validation progress|}}
-  {{input value=form.number}}
-  <br/>
+{{#x-form type="credit-card" as |form validation progress|}}
+
+  <div {{bind-attr class=":cc-outer form.type"}}>
+    <div class="background">
+      <div class="cc-inner">
+        {{input value=form.number class="spec-cc-input cc-number" placeholder="4111111111111111"}}
+        {{input value=form.exp class="spec-cc-exp cc-exp" placeholder="EXP"}}
+        {{input value=form.ccv class="spec-cc-ccv cc-ccv" placeholder="CCV"}}
+        {{input value=form.name class="spec-cc-name cc-name" placeholder="YOUR NAME"}}
+        <button class="spec-pay-button" {{bind-attr disabled="validation.isNotFulfilled"}} {{action "submitCard" form}}>Pay!</button>
+      </div>
+    </div>
+  </div>
+
   {{input type="checkbox" checked=validation.number.isFulfilled disabled=true}} Valid Card? ({{progress.fulfilled.percentage}}%)
   <ul>
     <li>{{input type="checkbox" checked=validation.number.rules.isLongEnough.isFulfilled disabled=true}} Long Enough?</li>
     <li>{{input type="checkbox" checked=validation.number.rules.passesLuhnCheck.isFulfilled disabled=true}} Pass Luhn Check</li>
-    <li>
-      {{input type="checkbox" checked=validation.number.rules.isUnique.isFulfilled disabled=true}} Is Unique?
-      {{#if validation.number.rules.isUnique.isPending}}
-        (checking server....)
-      {{/if}}
-    </li>
   </ul>
-
-  {{form.type}}
-  <p>Name:</p>
-  {{input value=form.name class="spec-cc-name"}}
-  <p>Expiration:</p>
-  {{input value=form.expirationDate class="spec-cc-exp"}}
-  <p>CCV:</p>
-  {{input value=form.ccv class="spec-cc-ccv"}}
-  <button class="spec-pay-button" {{bind-attr disabled="validation.isNotFulfilled"}} {{action "submitCard" form}}>Pay!</button>
 {{/x-form}}

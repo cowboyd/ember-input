@@ -1,0 +1,156 @@
+$color-main: #4e719f;
+$color-dark: #3b407f;
+$color-light: #588cb1;
+$color-background: hsla(205, 60%, 70%, 1);
+
+html, body {
+  background-color: $color-background;
+  margin: 20px;
+  text-align: center;
+}
+
+body > div {
+  $radius: 10px;
+  border-radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+
+  background-color: white;
+  padding-top: 15px;
+  padding-bottom: 20px;
+}
+
+body {
+  padding: 20px;
+}
+
+h1 {
+  font-size: 50px;
+}
+
+input {
+  $radius: 5px;
+  border-radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+
+  font-family: "serif";
+
+  height: 20px;
+}
+
+// Styling for Credit Card
+@font-face {
+  font-family: 'ocraregular';
+  src: url('/fonts/ocra-webfont.eot');
+  src: url('/fonts/ocra-webfont.eot?#iefix') format('embedded-opentype'),
+  url('/fonts/ocra-webfont.woff') format('woff'),
+  url('/fonts/ocra-webfont.ttf') format('truetype'),
+  url('/fonts/ocra-webfont.svg#ocraregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.cc-outer {
+  $radius: 1.15em;
+  border-radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+  border: 1px lightgray solid;
+  margin: auto;
+  width: 400px;
+  height: auto;
+
+  .background {
+    width: 24.8em;
+    height: 15.6em;
+    background: url("/images/card-front-background.png"), url("/cc-faces/generic-front.png");
+    background-size: 24.8em 15.6em;
+  }
+  &.visa {
+    background: url("/cc-faces/visa-front.png");
+    background-size: 24.8em 15.6em;
+  }
+  &.mastercard {
+    background: url("/cc-faces/mastercard-front.png");
+    background-size: 24.8em 15.6em;
+  }
+  &.amex {
+    background: url("/cc-faces/amex-front.png");
+    background-size: 24.8em 15.6em;
+  }
+  &.discover {
+    background: url("/cc-faces/discover-front.png");
+    background-size: 24.8em 15.6em;
+  }
+  &.diners {
+    background: url("/cc-faces/dinersclubintl-front.png");
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: 8em;
+  }
+  &.jcb {
+    background: url("/cc-faces/jcb-front.png");
+    background-size: 24.8em 15.6em;
+  }
+
+  .cc-inner {
+    position: relative;
+    width: 24.8em;
+    height: 15.6em;
+
+    input {
+      $cc-input: "ocraregular", "OCR A Std", "OCR A", Courier, "Courier New", monospace;
+      font-family: $cc-input;
+      line-height: normal;
+      border: 1px lightgray solid;
+    }
+    .cc-number {
+      left: 1.8em;
+      top: 7em;
+      position: absolute;
+      width: 270px;
+      font-size: 1em;
+    }
+    .cc-badge {
+      left: 20em;
+      top: 16em;
+      position: absolute;
+      width: 4em;
+    }
+    .cc-name {
+      left: 1.8em;
+      top: 13.3em;
+      position: absolute;
+      width: 15.4em;
+      font-size: 1em;
+      text-transform: uppercase;
+    }
+    .cc-exp {
+      left: 180px;
+      top: 185px;
+      position: absolute;
+      width: 4em;
+    }
+    .cc-ccv {
+      left: 230px;
+      top: 185px;
+      position: absolute;
+      width: 4em;
+    }
+    button {
+      padding-bottom: 5px;
+      right: 23px;
+      top: 38px;
+      position: absolute;
+      width: 6em;
+    }
+    .cc-badge {
+      height: 40px;
+      width: 105px;
+      position: absolute;
+      top: 12em;
+      left: 18em;
+    }
+  }
+}
