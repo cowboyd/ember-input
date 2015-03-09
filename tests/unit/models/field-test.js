@@ -93,4 +93,38 @@ describe('Field', function() {
       });
     });
   });
+
+  describe("with custom formatting", function() {
+    var field;
+    beforeEach(function() {
+      field = Field.create({
+        value: 5,
+        format: function(value) {
+          if (value === 5) {
+            return 'five';
+          } else {
+            return value;
+          }
+        },
+        unformat: function(input) {
+          if (input === 'five') {
+            return 5;
+          } else {
+            return input;
+          }
+        }
+      });
+    });
+    it("is formatted correctly", function() {
+      expect(field.get('input')).to.equal('five');
+    });
+    describe("when the value changes", function() {
+      beforeEach(function() {
+        field.set('value', 6);
+      });
+      it("updates the value", function() {
+        expect(field.get('input')).to.equal(6);
+      });
+    });
+  });
 });

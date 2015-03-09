@@ -41,39 +41,6 @@ describe('Form', function() {
     });
   });
 
-  describe("with custom serialization", function() {
-    beforeEach(function() {
-      form = Form.create({
-        value: 5,
-        serialize: function(value) {
-          if (value === 5) {
-            return 'five';
-          } else {
-            return value;
-          }
-        },
-        transform: function(input) {
-          if (input === 'five') {
-            return 5;
-          } else {
-            return input;
-          }
-        }
-      });
-    });
-    it("is formatted correctly", function() {
-      expect(form.get('input')).to.equal('five');
-    });
-    describe("when the value changes", function() {
-      beforeEach(function() {
-        form.set('value', 6);
-      });
-      it("updates the value", function() {
-        expect(form.get('input')).to.equal(6);
-      });
-    });
-  });
-
   describe("with no validations at all", function() {
     beforeEach(function() {
       form = Form.extend({}).create();
