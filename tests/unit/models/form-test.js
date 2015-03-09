@@ -128,7 +128,7 @@ describe('Form', function() {
               return this.get('input.length') > 5;
             }),
             hasNumbers: Form.rule('input', function() {
-              return /\d/.test(this.get('scope'));
+              return /\d/.test(this.get('input'));
             })
           }
         }),
