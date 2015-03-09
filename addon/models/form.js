@@ -1,13 +1,11 @@
 import Ember from 'ember';
 import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import { RuleSet, rule } from './rule';
-import Progress from './progress';
-import Validation from './validation';
+import Validatable from './validatable';
+import Field from './field';
 
-var Form = Ember.Object.extend(PropertyBindings, {
+var Form = Ember.Object.extend(PropertyBindings, Validatable, {
   propertyBindings: ['transformedValue > value', 'unformattedInput > scope', 'currentScope > scope', 'formattedInput > input'],
-
-  rules: {},
 
   currentScope: Ember.computed('value', function() {
     var value = this.get('value');
@@ -75,32 +73,6 @@ var Form = Ember.Object.extend(PropertyBindings, {
     return RuleSet.for(this, this.get('rules'));
   }).readOnly(),
 
-  validation: Ember.computed('ruleSet', '_childKeys', function() {
-    var form = this;
-    var children = this.get('_childKeys').reduce(function(children, key) {
-      children[key] = form.get(key).get('validation');
-      return children;
-    }, {});
-    return Validation.create(children, {
-      _ruleSet: this.get('ruleSet')
-    });
-  }).readOnly(),
-
-  progress: Ember.computed('ruleSet.all', function() {
-    var form = this;
-    var children = this.get('_childKeys').reduce(function(children, key) {
-      children[key] = form.get(key).get('progress');
-      return children;
-
-    }, {});
-    return Progress.create(children, {
-      rules: this.get('ruleSet.all'),
-      self: Progress.create({
-        rules: this.get('ruleSet.rules')
-      })
-    });
-  }),
-
   _fields: Ember.computed(function() {
     var fields = [];
     this.constructor.eachComputedProperty(function(name, meta) {
@@ -161,6 +133,24 @@ Form.reads = function(dependentKey) {
   return Ember.computed(dependentKey, function() {
     return this.get(dependentKey);
   }).readOnly().meta({isFormRead: true});
+};
+
+Form.field = function(attrs) {
+  var property = Ember.computed(function() {
+    attrs = attrs || {};
+    var Type;
+    if (typeof attrs === 'string') {
+      Type = this.container.lookupFactory('field:' + attrs);
+    } else if (Field.detect(attrs)) {
+      Type = attrs;
+    } else {
+      Type = Field.extend(attrs);
+    }
+    return Type.create({
+      parent: this,
+      name: property.meta().name
+    });
+  });
 };
 
 export default Form;
