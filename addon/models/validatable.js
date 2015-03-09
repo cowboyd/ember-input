@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import RuleSet from './rule';
+import { RuleSet } from './rule';
 import Validation from './validation';
 import Progress from './progress';
 
@@ -10,10 +10,10 @@ export default Ember.Mixin.create({
     return RuleSet.for(this, this.get('rules'));
   }).readOnly(),
 
-  validation: Ember.computed('ruleSet', '_childKeys', function() {
-    var form = this;
-    var children = this.get('_childKeys').reduce(function(children, key) {
-      children[key] = form.get(key).get('validation');
+  validation: Ember.computed('ruleSet', 'children.[]', function() {
+    var children = this.get('children').reduce(function(children, child) {
+      var key = child.get('fieldName');
+      children[key] = child.get('validation');
       return children;
     }, {});
     return Validation.create(children, {
@@ -21,12 +21,11 @@ export default Ember.Mixin.create({
     });
   }).readOnly(),
 
-  progress: Ember.computed('ruleSet.all', function() {
-    var form = this;
-    var children = this.get('_childKeys').reduce(function(children, key) {
-      children[key] = form.get(key).get('progress');
+  progress: Ember.computed('ruleSet.all.[]', function() {
+      var children = this.get('children').reduce(function(children, child) {
+      var key = child.get('fieldName');
+      children[key] = child.get('progress');
       return children;
-
     }, {});
     return Progress.create(children, {
       rules: this.get('ruleSet.all'),

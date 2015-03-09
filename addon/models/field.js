@@ -1,7 +1,11 @@
 import Ember from 'ember';
+import Validatable from './validatable';
 
-export default Ember.Object.extend({
+export default Ember.Object.extend(Validatable, {
   propertyBindings: ['formattedValue > templatingContext', 'unformattedValue > value'],
+
+  input: Ember.computed.alias('templatingContext'),
+  scope: Ember.computed.alias('templatingContext'),
 
   templatingContext: null,
 
@@ -14,7 +18,7 @@ export default Ember.Object.extend({
   formattedValue: Ember.computed('value', 'format', function() {
     return this.format(this.get('value'));
   }),
-  unformattedValue: Ember.computed('templatingContext', function() {
+  unformattedValue: Ember.computed('templatingContext', 'unformat', function() {
     return this.unformat(this.get('templatingContext'));
   })
 });

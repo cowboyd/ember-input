@@ -7,6 +7,8 @@ import Field from './field';
 var Form = Ember.Object.extend(PropertyBindings, Validatable, {
   propertyBindings: ['transformedValue > value', 'unformattedInput > scope', 'currentScope > scope', 'formattedInput > input'],
 
+  templatingContext: Ember.computed.alias('input'),
+
   currentScope: Ember.computed('value', function() {
     var value = this.get('value');
     if (this.get('isAtom')) {
@@ -100,6 +102,8 @@ var Form = Ember.Object.extend(PropertyBindings, Validatable, {
     return this.get(key);
   }),
 
+  children: Ember.computed.reads('_children'),
+
   willDestroy: function() {
     this.get('_children').forEach(function(child) {
       child.destroy();
@@ -123,7 +127,8 @@ Form.hasOne = function(attrs) {
     }
     return Type.create({
       _parentForm: this,
-      _fieldName: property.meta().name
+      _fieldName: property.meta().name,
+      fieldName: property.meta().name
     });
   }).meta({isForm: true});
   return property;
@@ -148,9 +153,10 @@ Form.field = function(attrs) {
     }
     return Type.create({
       parent: this,
-      name: property.meta().name
+      fieldName: property.meta().name
     });
-  });
+  }).meta({isForm: true});
+  return property;
 };
 
 export default Form;

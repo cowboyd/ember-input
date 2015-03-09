@@ -30,8 +30,8 @@ describe('Form', function() {
   describe("default template context on a complex form", function() {
     beforeEach(function() {
       form = Form.extend({
-        firstName: Form.hasOne(),
-        lastName: Form.hasOne()
+        firstName: Form.field(),
+        lastName: Form.field()
       }).create();
       this.value = {
         firstName: 'Charles',
