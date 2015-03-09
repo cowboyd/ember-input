@@ -18,6 +18,29 @@ describe("Validatable", function() {
     });
   });
 
+  describe("with no validations at all", function() {
+    beforeEach(function() {
+      v = AlwaysBeValidating.create();
+      v.get('validation.isFulfilled');
+    });
+
+    it("is valid", function() {
+      expect(v.get('validation.isSettled')).to.equal(true);
+      expect(v.get('validation.isFulfilled')).to.equal(true);
+      expect(v.get('validation.isRejected')).to.equal(false);
+    });
+
+    describe("pushing any kind of nonsense into its input", function() {
+      beforeEach(function() {
+        v.set('input', 'xyz%^((()))');
+      });
+      it("remains valid", function() {
+        expect(v.get('validation.isFulfilled')).to.equal(true);
+      });
+    });
+
+  });
+
 
   describe("with a simple validation", function() {
     beforeEach(function() {

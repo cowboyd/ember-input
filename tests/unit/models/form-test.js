@@ -41,29 +41,6 @@ describe('Form', function() {
     });
   });
 
-  describe("with no validations at all", function() {
-    beforeEach(function() {
-      form = Form.extend({}).create();
-      form.get('validation.isFulfilled');
-    });
-
-    it("is valid", function() {
-      expect(form.get('validation.isSettled')).to.equal(true);
-      expect(form.get('validation.isFulfilled')).to.equal(true);
-      expect(form.get('validation.isRejected')).to.equal(false);
-    });
-
-    describe("pushing any kind of nonsense into its input", function() {
-      beforeEach(function() {
-        form.set('input', 'xyz%^((()))');
-      });
-      it("remains valid", function() {
-        expect(form.get('validation.isFulfilled')).to.equal(true);
-      });
-    });
-
-  });
-
   describe("with multiple atomic fields", function() {
     beforeEach(function() {
       form = Form.extend({
