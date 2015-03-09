@@ -6,7 +6,7 @@ import Field from 'ember-input/models/field';
 
 var expect = window.expect;
 
-describe.only('Form', function() {
+describe('Form', function() {
   var form;
   afterEach(function() {
     if (!!form) {

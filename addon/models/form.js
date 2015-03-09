@@ -50,14 +50,12 @@ var Form = Ember.Object.extend(PropertyBindings, Validatable, {
 
   _childKeys: Ember.computed.mapBy('_fields', 'name'),
 
-  _children: Ember.computed.map('_childKeys', function(key) {
-    return this.get(key);
+  children: Ember.computed.map('_fields', function(desc) {
+    return this.get(desc.name);
   }),
 
-  children: Ember.computed.reads('_children'),
-
   willDestroy: function() {
-    this.get('_children').forEach(function(child) {
+    this.get('children').forEach(function(child) {
       child.destroy();
     });
     this._super.apply(this, arguments);
@@ -78,7 +76,6 @@ Form.hasOne = function(attrs) {
       Type = Form.extend(attrs);
     }
     return Type.create({
-      _parentForm: this,
       fieldName: property.meta().name
     });
   }).meta({isForm: true});
@@ -103,7 +100,6 @@ Form.field = function(attrs) {
       Type = Field.extend(attrs);
     }
     return Type.create({
-      parent: this,
       fieldName: property.meta().name
     });
   }).meta({isForm: true});
