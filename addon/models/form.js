@@ -32,7 +32,7 @@ var Form = Ember.Object.extend(PropertyBindings, Validatable, {
   cascade: Ember.observer('_parentForm.currentScope', function() {
     var parent = this.get('_parentForm.currentScope');
     if (!!parent) {
-      var newScope = parent.get(this.get('_fieldName'));
+      var newScope = parent.get(this.get('fieldName'));
       this.set('scope', this.unformat(newScope));
     }
   }),
@@ -127,7 +127,6 @@ Form.hasOne = function(attrs) {
     }
     return Type.create({
       _parentForm: this,
-      _fieldName: property.meta().name,
       fieldName: property.meta().name
     });
   }).meta({isForm: true});
