@@ -2,6 +2,7 @@
 import { describe, it, beforeEach, afterEach, sinon } from '../../test-helper';
 import Ember from 'ember';
 import Form from 'ember-input';
+import Field from 'ember-input/models/field';
 
 var expect = window.expect;
 
@@ -62,20 +63,26 @@ describe('Form', function() {
     });
   });
 
-  describe("with a transform", function() {
+  describe.only("with an unformatting", function() {
     beforeEach(function() {
-      form = Form.create({
-        transform: function(input) {
+      form = Field.create({
+        unformat: function(input) {
           return parseInt(input);
         },
         rules: {
           anInteger: Form.rule('input', function() {
+            // console.log("this.get('input') = ", this.get('input'));
+            // console.log("!isNaN(parseInt(this.get('input')) = ", !isNaN(parseInt(this.get('input'))));
             return !isNaN(parseInt(this.get('input')));
           })
         }
       });
       form.set('input', '5');
     });
+    it("is valid", function() {
+      expect(form.get('validation.isFulfilled')).to.equal(true);
+    });
+
     it('derives the value from the transform function', function() {
       expect(form.get('value')).to.equal(5);
     });

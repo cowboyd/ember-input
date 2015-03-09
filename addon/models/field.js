@@ -1,10 +1,12 @@
 import Ember from 'ember';
+import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import Validatable from './validatable';
 
-export default Ember.Object.extend(Validatable, {
-  propertyBindings: ['formattedValue > input', 'unformattedValue > value'],
+export default Ember.Object.extend(Validatable, PropertyBindings, {
+  propertyBindings: ['formattedValue > input', 'unformattedInput > value'],
 
-  templatingContext: null,
+  value: null,
+  input: null,
 
   format: function(unformatted) {
     return unformatted;
@@ -15,7 +17,11 @@ export default Ember.Object.extend(Validatable, {
   formattedValue: Ember.computed('value', 'format', function() {
     return this.format(this.get('value'));
   }),
-  unformattedValue: Ember.computed('templatingContext', 'unformat', function() {
-    return this.unformat(this.get('templatingContext'));
-  })
+  unformattedInput: Ember.computed('validation.isFulfilled', 'input', function() {
+    if (this.get('validation.isFulfilled')) {
+      return this.unformat(this.get('input'));
+    } else {
+      return this.get('value');
+    }
+  }).readOnly()
 });
