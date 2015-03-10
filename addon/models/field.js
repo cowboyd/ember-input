@@ -19,11 +19,7 @@ export default Ember.Object.extend(Validatable, PropertyBindings, {
 
   formattedBuffer: Ember.computed('buffer', 'format', function() {
     var buffer = this.get('buffer');
-    var formatted = this.format(buffer);
-    if (formatted !== this.format(this.unformat(formatted))) {
-      throw new Error('unstable format. ' + formatted + ' !=  ' + this.format(this.unformat(formatted)));
-    }
-    return formatted;
+    return this.format(buffer);
   }),
 
   validatedBuffer: Ember.computed('validation.isFulfilled', function() {
@@ -35,11 +31,6 @@ export default Ember.Object.extend(Validatable, PropertyBindings, {
   }),
 
   unformattedInput: Ember.computed('input', function() {
-    var unformatted = this.unformat(this.get('input'));
-    var inverted = this.unformat(this.format(unformatted));
-    if (unformatted !== inverted && !(isNaN(unformatted) && isNaN(inverted))) {
-      throw new Error('unstable parse. "' + unformatted + '" != "' + this.unformat(this.format(unformatted)) + '"');
-    }
-    return unformatted;
+    return this.unformat(this.get('input'));
   }).readOnly()
 });

@@ -4,8 +4,8 @@ import inferCardType from '../utils/infer-card-type';
 
 export default Field.extend({
 
-  format: function(unformatted) {
-    var num = unformatted || '';
+  format: function(buffer) {
+    var num = buffer || '';
     if (this.get("type") === "amex") {
       return [num.substring(0,4), num.substring(4,10), num.substring(10,15)].join(" ").trim();
     } else {
@@ -14,9 +14,9 @@ export default Field.extend({
     }
   },
 
-  unformat: function(formatted) {
-    if (!!formatted) {
-      return formatted.replace(/(\s|[^0-9])/g, '');
+  unformat: function(input) {
+    if (!!input) {
+      return input.replace(/(\s|[^0-9])/g, '');
     } else {
       return '';
     }
