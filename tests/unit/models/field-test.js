@@ -30,12 +30,16 @@ describe('Field', function() {
   describe("with an unformatting", function() {
     beforeEach(function() {
       field = Field.create({
+        format: function(buffer) {
+          return buffer || '';
+        },
         unformat: function(input) {
-          return parseInt(input);
+          return parseInt(input) || '';
         },
         rules: {
-          anInteger: rule('input', function() {
-            return !isNaN(parseInt(this.get('input')));
+          anInteger: rule('buffer', function() {
+            var buffer = this.get('buffer');
+            return !isNaN(parseInt(buffer));
           })
         }
       });
@@ -69,14 +73,15 @@ describe('Field', function() {
     beforeEach(function() {
       field = Field.extend({
         input: "",
-        format: function(input) {
-          input = input || "";
-          input = input.replace("(","").replace(")","");
-          if (Ember.isEmpty(input)) {
+        format: function(buffer) {
+          if (Ember.isEmpty(buffer)) {
             return "";
           } else {
-            return "(" + input + ")";
+            return "(" + buffer + ")";
           }
+        },
+        unformat: function(input) {
+          return (input || "").replace("(","").replace(")","");
         }
       }).create();
       field.set('input', 'ohai');

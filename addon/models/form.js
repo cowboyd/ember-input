@@ -1,11 +1,9 @@
 import Ember from 'ember';
-import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 import { rule } from './rule';
 import Validatable from './validatable';
 import Field from './field';
 
-var Form = Ember.Object.extend(PropertyBindings, Validatable, {
-  propertyBindings: [],
+var Form = Ember.Object.extend(Validatable, {
 
   templateContext: Ember.computed('value', function() {
     var value = this.get('value');
@@ -86,7 +84,7 @@ Form.reads = function(dependentKey) {
   }).readOnly().meta({isFormRead: true});
 };
 
-Form.field = function(attrs) {
+export function field(attrs) {
   var property = Ember.computed(function() {
     attrs = attrs || {};
     var Type;
@@ -102,6 +100,8 @@ Form.field = function(attrs) {
     });
   }).meta({isForm: true});
   return property;
-};
+}
+
+Form.field = field;
 
 export default Form;

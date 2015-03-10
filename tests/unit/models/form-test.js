@@ -45,12 +45,15 @@ describe('Form', function() {
     beforeEach(function() {
       form = Form.extend({
         number: Form.field({
+          format: function(buffer) {
+            return buffer || '';
+          },
           unformat: function(input) {
-            return parseInt(input);
+            return parseInt(input) || '';
           },
           rules: {
-            aNumber: Form.rule('input', function() {
-              return !isNaN(parseInt(this.get('input')));
+            aNumber: Form.rule('buffer', function() {
+              return !isNaN(parseInt(this.get('buffer')));
             })
           }
         }),
@@ -76,7 +79,9 @@ describe('Form', function() {
     });
     describe("with an invalid subfield", function() {
       beforeEach(function() {
-        form.set('templateContext.number', 'five');
+        form.set('number.input', 'five');
+      });
+      beforeEach(function() {
         form.get('validation.isFulfilled');
       });
 
@@ -104,10 +109,11 @@ describe('Form', function() {
           })
         })
       }).create();
+      this.type = form.get('templateContext.type');
     });
 
     it("is visible on the input", function() {
-      expect(form.get('templateContext.type')).to.equal('short');
+      expect(this.type).to.equal('short');
     });
 
     describe("updating the child input", function() {

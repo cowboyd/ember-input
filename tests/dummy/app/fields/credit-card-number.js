@@ -1,8 +1,8 @@
 import Ember from 'ember';
-import Form from 'ember-input';
+import { Field, rule } from 'ember-input';
 import inferCardType from '../utils/infer-card-type';
 
-export default Form.extend({
+export default Field.extend({
 
   format: function(unformatted) {
     var num = unformatted || '';
@@ -22,24 +22,24 @@ export default Form.extend({
     }
   },
 
-  type: Ember.computed("unformattedInput", function() {
-    var input = this.get("unformattedInput") || "";
+  type: Ember.computed("input", function() {
+    var input = this.get("input") || "";
     return inferCardType(input);
   }),
 
   rules: {
-    isLongEnough: Form.rule('type', 'unformattedInput.length', function() {
+    isLongEnough: rule('type', 'buffer.length', function() {
       switch(this.get('type')) {
       case 'diners':
       case 'amex':
-        return this.get('unformattedInput.length') === 15;
+        return this.get('buffer.length') === 15;
       default:
-        return this.get('unformattedInput.length') === 16;
+        return this.get('buffer.length') === 16;
       }
     }),
 
-    passesLuhnCheck: Form.rule('scope', function() {
-      var value = this.get('scope');
+    passesLuhnCheck: rule('buffer', function() {
+      var value = this.get('buffer');
       // accept only digits, dashes or spaces
       if (/[^0-9-\s]+/.test(value)) {return false;}
 
