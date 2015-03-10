@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import {Form, field, rule } from 'ember-input';
 
 export default Form.extend({
