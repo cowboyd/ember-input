@@ -7,8 +7,9 @@ export default Field.extend({
     return (buffer || '').replace(/[^0-9]\//g, '');
   },
 
-  struct: Ember.computed('buffer', function() {
-    var stripped = (input || '').replace(/\s/g, '').replace(/[^0-9\/]/g, '');
+  structure: Ember.computed('buffer', function() {
+    var buffer = this.get('buffer');
+    var stripped = (buffer || '').replace(/\s/g, '').replace(/[^0-9\/]/g, '');
     var split = stripped.split('/');
 
     if (split.length > 1) {

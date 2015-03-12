@@ -22,7 +22,20 @@ var Form = Ember.Object.extend(Validatable, {
   }),
 
   serialize: function(value) {
-    return value;
+    var isEmberObject = Ember.Object.detect(value);
+    var serialized = this.get('_fields').reduce(function(values, field) {
+      var val;
+      if (isEmberObject) {
+        val = value.get(field.name);
+      } else {
+        val = value[field.name];
+      }
+      if (val != null) {
+        values[field.name] = val;
+      }
+      return values;
+    }, {});
+    return serialized;
   },
 
   _fields: Ember.computed(function() {

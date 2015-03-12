@@ -24,21 +24,50 @@ describe('Form', function() {
         firstName: Form.field(),
         lastName: Form.field()
       }).create();
-      this.value = {
-        firstName: 'Charles',
-        lastName: 'Lowell'
-      };
-      form.set('value', this.value);
     });
 
-    it("is not the same as the value ", function() {
-      expect(form.get('templateContext')).not.to.equal(this.value);
+    describe("with a POJO vaule", function() {
+      beforeEach(function() {
+        this.value = {
+          firstName: 'Charles',
+          lastName: 'Lowell',
+          hobby: 'OSS'
+        };
+        form.set('value', this.value);
+      });
+
+      it("is not the same as the value ", function() {
+        expect(form.get('templateContext')).not.to.equal(this.value);
+      });
+
+      it("populates the form context with the values from the object", function() {
+        expect(form.get('templateContext.firstName')).to.equal('Charles');
+        expect(form.get('templateContext.lastName')).to.equal('Lowell');
+      });
+
+      it("does not have values not listed in the fields", function() {
+        expect(form.get('templateContext.hobby')).to.equal(undefined);
+      });
     });
 
-    it("populates the form context with the values from the object", function() {
-      expect(form.get('templateContext.firstName')).to.equal('Charles');
-      expect(form.get('templateContext.lastName')).to.equal('Lowell');
+    describe("with a Ember.Object value", function() {
+      beforeEach(function() {
+        this.value = Ember.Object.create({
+          firstName: 'Charles',
+          lastName: 'Lowell'
+        });
+        form.set('value', this.value);
+      });
+      it("populate the form context with the values from the object", function() {
+        expect(form.get('templateContext.firstName')).to.equal('Charles');
+        expect(form.get('templateContext.lastName')).to.equal('Lowell');
+      });
+      it("does not have values not listed in the fields", function() {
+        expect(form.get('templateContext.hobby')).to.equal(undefined);
+      });
     });
+
+
   });
 
   describe("with multiple atomic fields", function() {
@@ -63,9 +92,14 @@ describe('Form', function() {
       form.set('string.input', 'hello');
     });
 
+    beforeEach(function() {
+      this.number = form.get('templateContext.number');
+      this.string = form.get('templateContext.string');
+    });
+
     it("has a input which is a rollup of the fields", function() {
-      expect(form.get('templateContext.number')).to.equal(5);
-      expect(form.get('templateContext.string')).to.equal('hello');
+      expect(this.number).to.equal(5);
+      expect(this.string).to.equal('hello');
     });
     describe("changing one of the subfields", function() {
       beforeEach(function() {
