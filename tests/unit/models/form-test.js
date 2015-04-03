@@ -71,8 +71,6 @@ describe('Form', function() {
         expect(form.get('templateContext.hobby')).to.equal(undefined);
       });
     });
-
-
   });
 
   describe("with multiple atomic fields", function() {
