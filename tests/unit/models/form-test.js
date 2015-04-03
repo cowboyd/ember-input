@@ -135,8 +135,9 @@ describe('Form', function() {
   describe("incorporating read only values from children", function() {
     beforeEach(function() {
       form = Form.extend({
-        type: Form.reads('name.type'),
-
+        type: computed('name.type', function() {
+          return this.get('name.type');
+        }).readOnly(),
         name: Form.field({
           input: '',
           type: computed('input', function() {

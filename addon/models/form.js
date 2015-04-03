@@ -52,7 +52,7 @@ var Form = Ember.Object.extend(Validatable, {
   _readKeys: Ember.computed(function() {
     var readKeys = [];
     this.constructor.eachComputedProperty(function(name, meta) {
-      if (meta.isFormRead) {
+      if (!meta.isForm) {
         readKeys.push(name);
       }
     }, this);
