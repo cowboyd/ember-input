@@ -5,7 +5,9 @@ import Progress from './progress';
 
 export default Ember.Mixin.create({
   rules: {},
-  children: [],
+  children: Ember.computed(function() {
+    return Ember.A();
+  }),
   ruleSet: Ember.computed('rules', function() {
     return RuleSet.for(this, this.get('rules'));
   }).readOnly(),

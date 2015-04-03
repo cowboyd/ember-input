@@ -12,9 +12,13 @@ describe("Validatable", function() {
   var v;
   beforeEach(function() {
     AlwaysBeValidating = Ember.Object.extend(Validatable, {
+      init() {
+        this._super.apply(this, arguments);
+        this.consumeValidation();
+      },
       consumeValidation: Ember.observer('validation.isFulfilled', function() {
         this.get('validation.isFulfilled');
-      }).on('init')
+      })
     });
   });
 

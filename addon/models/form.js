@@ -46,7 +46,7 @@ var Form = Ember.Object.extend(Validatable, {
         fields.push(meta);
       }
     }, this);
-    return fields;
+    return Ember.A(fields);
   }),
 
   _readKeys: Ember.computed(function() {

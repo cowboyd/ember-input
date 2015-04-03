@@ -13,7 +13,7 @@ export var RuleSet = Ember.Object.extend({
     }));
   }),
   ruleNames: Ember.computed('definition', function() {
-    return Object.keys(this.get('definition'));
+    return Ember.A(Object.keys(this.get('definition')));
   }),
   rules: Ember.computed.map('ruleNames', function(ruleName) {
     var Rule = Ember.Object.extend({
@@ -37,9 +37,9 @@ export var RuleSet = Ember.Object.extend({
   }),
   children: Ember.computed.mapBy('form.children', 'ruleSet'),
   all: Ember.computed('children.[]', function() {
-    return this.get('children').reduce(function(rules, child) {
+    return Ember.A(this.get('children').reduce(function(rules, child) {
       return rules.concat(child.get('all'));
-    }, this.get('rules'));
+    }, this.get('rules')));
   })
 });
 

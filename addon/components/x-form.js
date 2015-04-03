@@ -16,7 +16,8 @@ export default Ember.Component.extend({
     return Type.create();
   }),
 
-  _teardown: Ember.observer(function() {
+  willDestroyElement() {
     this.get('_formObject').destroy();
-  }).on('willDestroyElement')
+    this._super.apply(arguments);
+  }
 });
