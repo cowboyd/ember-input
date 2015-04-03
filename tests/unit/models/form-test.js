@@ -6,6 +6,11 @@ import Field from 'ember-input/models/field';
 
 var expect = window.expect;
 
+const {
+  computed
+} = Ember;
+
+
 describe('Form', function() {
   var form;
   afterEach(function() {
@@ -134,7 +139,7 @@ describe('Form', function() {
 
         name: Form.field({
           input: '',
-          type: Ember.computed('input', function() {
+          type: computed('input', function() {
             if (this.get('input.length') > 15) {
               return 'long';
             } else {
