@@ -1,11 +1,13 @@
 import Ember from 'ember';
+import layout from '../templates/components/x-form';
 import Form from 'ember-input/models/form';
 import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
 import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 
 export default Ember.Component.extend(PropertyBindings, {
-  propertyBindings: ['value > _formObject.value'],
   tagName: 'form',
+  layout: layout,
+  propertyBindings: ['value > _formObject.value'],
 
   _formObject: Ember.computed('type', function() {
     var type = this.get('type');
