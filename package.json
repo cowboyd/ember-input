@@ -19,7 +19,6 @@
   "license": "MIT",
   "devDependencies": {
     "broccoli-asset-rev": "^2.0.2",
-    "ember-binding-macros": "~0.3.0",
     "ember-cli": "0.2.2",
     "ember-cli-app-version": "0.3.3",
     "ember-cli-content-security-policy": "0.4.0",
@@ -38,7 +37,8 @@
   ],
   "dependencies": {
     "ember-cli-babel": "^4.0.0",
-    "ember-cli-htmlbars": "^0.7.4"
+    "ember-cli-htmlbars": "^0.7.4",
+    "ember-binding-macros": "~0.3.0"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
