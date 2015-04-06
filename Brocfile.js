@@ -9,6 +9,7 @@ var app = new EmberAddon();
 // output files.
 
 app.import('bower_components/sinon-chai/lib/sinon-chai.js', {type: 'test'});
+app.import('bower_components/chai-jquery/chai-jquery.js', {type: 'test'});
 //
 // If you need to use different assets in different
 // environments, specify an object as the first parameter. That

@@ -11,6 +11,7 @@
     "ember-load-initializers": "ember-cli/ember-load-initializers#0.0.2",
     "ember-mocha": "~0.5.1",
     "sinon": "http://sinonjs.org/releases/sinon-1.12.2.js",
-    "sinon-chai": "~2.7.0"
+    "sinon-chai": "~2.7.0",
+    "chai-jquery": "~2.0.0"
   }
 }

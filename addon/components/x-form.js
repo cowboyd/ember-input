@@ -1,7 +1,9 @@
 import Ember from 'ember';
 import Form from 'ember-input/models/form';
+import { bindProperties } from 'ember-binding-macros/mixins/property-bindings';
+import PropertyBindings from 'ember-binding-macros/mixins/property-bindings';
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(PropertyBindings, {
   propertyBindings: ['value > _formObject.value'],
   tagName: 'form',
 
@@ -15,6 +17,14 @@ export default Ember.Component.extend({
     }
     return Type.create();
   }),
+
+  init: function() {
+    this._super.apply(this, arguments);
+    const boundAttributes = this.get('_formObject').get('formAttributeBindings') || [];
+    boundAttributes.forEach(function(attr) {
+      bindProperties(this, attr, '_formObject.' + attr, true);
+    }, this);
+  },
 
   willDestroyElement() {
     this.get('_formObject').destroy();

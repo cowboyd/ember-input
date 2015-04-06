@@ -1,5 +1,7 @@
 <!-- card validation -->
-{{#x-form type="credit-card" as |form validation progress|}}
+{{#x-form type="credit-card" quotation=stanley as |form validation progress|}}
+
+  <span class="spec-bound-form-attribute">{{form.funQuote}}</span>
 
   <div {{bind-attr class=":cc-outer form.type"}}>
     <div class="background">
