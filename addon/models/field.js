@@ -22,7 +22,7 @@ export default Ember.Object.extend(Validatable, PropertyBindings, {
     return this.format(buffer);
   }),
 
-  validatedBuffer: Ember.computed('validation.isFulfilled', function() {
+  validatedBuffer: Ember.computed('buffer', 'validation.isFulfilled', function() {
     if (this.get('validation.isFulfilled')) {
       return this.get('buffer');
     } else {
